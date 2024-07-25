@@ -21,6 +21,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Switch } from "./ui/switch";
+import Link from "next/link";
 
 interface MoreDropdownProps {
   buttonClassName: string;
@@ -61,7 +62,7 @@ function MoreDropdown({ buttonClassName, iconClassName, buttonLabel }: MoreDropd
         >
           <Menu className={iconClassName} />
           <div className="hidden lg:block">{buttonLabel}</div>
-        </Button>
+        </Button>        
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
@@ -75,15 +76,18 @@ function MoreDropdown({ buttonClassName, iconClassName, buttonLabel }: MoreDropd
       >
         {!showModeToggle && (
           <>
-            <DropdownMenuItem className="menuItem">
-              <Settings size={20} />
-              <p>Settings</p>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="menuItem">
-              <Activity size={20} />
-              <p>Your activity</p>
-            </DropdownMenuItem>
-
+            <Link href="/settings">
+              <DropdownMenuItem className="menuItem">
+                <Settings size={20}/>
+                <p>Settings</p>
+              </DropdownMenuItem>
+            </Link>
+            <Link href="/activity">
+              <DropdownMenuItem className="menuItem" >
+                <Activity size={20} />
+                <p>Your activity</p>
+              </DropdownMenuItem>
+            </Link>
             <DropdownMenuItem
               className="menuItem"
               onClick={() => setShowModeToggle(true)}

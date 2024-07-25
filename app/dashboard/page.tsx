@@ -1,8 +1,11 @@
+import { DataChart } from "@/components/DataChart";
+import Slider from "@/components/Slider";
+
 import React from "react";
 
 function DashboardPage() {
   return (
-    <div>DashboardPage</div>
+    <DataChart />
   )
 }
 
