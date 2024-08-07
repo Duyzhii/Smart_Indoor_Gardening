@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { publishMQTTMessage } from "@/app/actions/mqttActions";
+import { requestData } from "@/app/actions/mqttActions";
 
 import { TrendingUp, Sun, Lightbulb, LightbulbOff } from "lucide-react";
 import {
@@ -123,24 +124,53 @@ interface DataChartProps {
 interface myDict {
     [key: string]: string;
 }
+// {"light":386,"soil_moisture":373,"air_quality":372,"PIR":0,"humidity":null,"temperature":null}
+function parseData(data: string) {
+    const obj = JSON.parse(data);
+    return obj;
+}
+
 const sensorDict: myDict = {
     "Light sensor": "LED",
-    "Soil moisture sensor": "PUMP",
+    "Soil moisture sensor": "FAN",
     "Air quality sensor": "FAN",
 };
 
 const DataChart: React.FC<DataChartProps> = ({ sensorType }) => {
+    const [sensorValue, setSensorValue] = useState("null");
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await requestData();
+                console.log("Response:", response);
+                setSensorValue(response);
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
+
+        fetchData();
+        const interval = setInterval(() => {
+            fetchData();
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, []);
+    let sensorValueDisplay = parseData(sensorValue);
+
+    //-----------------------------------
     const topic = sensorDict[sensorType];
     const [buttonStatus, setButtonStatus] = useState(false);
     const [status, setStatus] = useState("");
     const handlePublish = async (): Promise<void> => {
         try {
+            setButtonStatus(!buttonStatus);
             const action = buttonStatus ? "OFF" : "ON";
             const result: string = await publishMQTTMessage(
                 `${topic}_${action}`,
                 topic
             );
-            setButtonStatus(!buttonStatus);
             setStatus(result);
         } catch (error: unknown) {
             if (error instanceof Error) {
