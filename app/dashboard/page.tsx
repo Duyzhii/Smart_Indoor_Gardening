@@ -1,7 +1,7 @@
 "use client";
 
 import DataBox from "@/components/DataBox";
-import { DataChart } from "@/components/DataChart";
+import DataChart from "@/components/DataChart";
 import { useState } from "react";
 import  Slider from "@/components/Slider";
 

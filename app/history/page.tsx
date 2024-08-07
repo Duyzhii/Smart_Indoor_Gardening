@@ -1,15 +1,29 @@
-import React from 'react'
-import { HistoryByDayChart } from '@/components/HistoryByDayChart'
-import { SelectSensors } from '@/components/SelectSensors'
+"use client";
+
+import React, { useState } from "react";
+import { HistoryByDayChart } from "@/components/HistoryByDayChart";
+import { SelectSensors } from "@/components/SelectSensors";
+import MySwitch2 from "@/components/MySwitch2";
 
 function HistoryPage() {
-  return (
-    <div>
-      <div><HistoryByDayChart/></div>
+    let sensorType = "light-sensor";
+    // get value from select sensor
+    const [selectedSensor, setSelectedSensor] = useState(sensorType);
 
-      <div className = "flex pt-11 justify-center mx-auto"><SelectSensors/></div>
-    </div>
-  )
+    return (
+        <div>
+            <div>
+                <HistoryByDayChart sensorType={selectedSensor} />
+            </div>
+
+            <div className="flex pt-11 justify-center mx-auto">
+                <SelectSensors setSelectedSensor={setSelectedSensor} />
+            </div>
+            <div>
+                <MySwitch2 />
+            </div>
+        </div>
+    );
 }
 
-export default HistoryPage
+export default HistoryPage;
