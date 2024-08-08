@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { publishMQTTMessage } from "@/app/actions/mqttActions";
-import { requestData } from "@/app/actions/mqttActions";
 
 import {
     TrendingUp,
@@ -32,140 +31,52 @@ import {
 } from "@/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Switch } from "@/components/ui/switch";
+import { Sensor, ChartData } from "@/lib/definitions";
 
-const lightSensorChartConfig: ChartConfig = {
-    value: {
-        label: "Light Intensity",
-    },
-    safari: {
-        label: "Safari",
-        color: "hsl(var(--chart-2))",
-    },
-};
-
-const temperatureSensorChartConfig: ChartConfig = {
-    value: {
-        label: "Temperature",
-    },
-    safari: {
-        label: "Safari",
-        color: "hsl(var(--chart-2))",
-    },
-};
-
-const soilMoistureSensorChartConfig: ChartConfig = {
-    value: {
-        label: "Soil Moisture",
-    },
-    safari: {
-        label: "Safari",
-        color: "hsl(var(--chart-2))",
-    },
-};
-
-const airQualitySensorChartConfig: ChartConfig = {
-    value: {
-        label: "Air Quality",
-    },
-    safari: {
-        label: "Safari",
-        color: "hsl(var(--chart-2))",
-    },
-};
-
-const humiditySensorChartConfig: ChartConfig = {
-    value: {
-        label: "Humidity",
-    },
-    safari: {
-        label: "Safari",
-        color: "hsl(var(--chart-2))",
-    },
-};
-
-const staticSensorData: Record<string, any> = {
-    "Light sensor": {
-        sensor: "Light sensor",
-        title: "Light intensity",
-        physical_quantity: "lux",
-        suitable: "200",
-        device: "Light bulb",
-        maxValue: 200,
-        sensor_icon: Sun,
-        device_icon_on: Lightbulb,
-        device_icon_off: LightbulbOff,
-        chartConfig: lightSensorChartConfig,
-    },
-    "Temperature sensor": {
-        sensor: "Temperature sensor",
-        title: "Temperature",
-        physical_quantity: "°C",
-        suitable: "25",
-        device: "Air conditioner",
-        maxValue: 50,
-        chartConfig: temperatureSensorChartConfig,
-    },
-    "Soil moisture sensor": {
-        sensor: "Soil moisture sensor",
-        title: "Soil moisture",
-        physical_quantity: "%",
-        suitable: "40",
-        device: "Water Pump",
-        maxValue: 100,
-        sensor_icon: Droplet,
-        device_icon_on: Power,
-        device_icon_off: PowerOff,
-        chartConfig: soilMoistureSensorChartConfig,
-    },
-    "Air quality sensor": {
-        sensor: "Air quality sensor",
-        title: "Air Quality",
-        physical_quantity: "ppm",
-        suitable: "75",
-        device: "Fan",
-        maxValue: 100,
-        sensor_icon: Fan,
-        device_icon_on: Power,
-        device_icon_off: PowerOff,
-        chartConfig: airQualitySensorChartConfig,
-    },
-    "Humidity sensor": {
-        sensor: "Humidity sensor",
-        title: "Humidity",
-        physical_quantity: "%",
-        suitable: "60",
-        device: "Dehumidifier",
-        maxValue: 100,
-        chartConfig: humiditySensorChartConfig,
-    },
-};
 
 interface DataChartProps {
-    sensorType: string;
-    dynamicData: any;
+    sensor: Sensor;
     onDeviceStatusChange: (sensorType: string, status: boolean) => void;
 }
 
-const calculateMaxAngle = (value: number, maxValue: number): number => {
+const calculateAngle = (value: number, maxValue: number): number => {
     const angleRange = 360;
     return (value / maxValue) * angleRange;
 };
-interface myDict {
-    [key: string]: string;
+
+const createChartConfig = (sensor: Sensor): ChartConfig => {
+    const chartConfig = {
+        value: {
+            label: sensor.name,
+        },
+        safari: {
+            label: "Safari",
+            color: "hsl(var(--chart-2))",
+        },
+    };
+
+    return chartConfig;
 }
-const sensorDict: myDict = {
-    "Light sensor": "LED",
-    "Soil moisture sensor": "PUMP",
-    "Air quality sensor": "FAN",
-};
+
+// chartData: [{ browser: "safari", value: 150, fill: "var(--color-safari)" }],
+const createChartData = (sensor: Sensor) : ChartData => {
+    const chartData: ChartData = {
+        browser: "safari",
+        value: sensor.value.currentValue,
+        fill: "var(--color-safari)",
+    };
+
+    return chartData;
+}
+
 export function DataChart({
-    sensorType,
-    dynamicData,
+    sensor,
     onDeviceStatusChange,
 }: DataChartProps) {
-    const topic = sensorDict[sensorType];
+    const topic = sensor.name;
     const [buttonStatus, setButtonStatus] = useState(false);
     const [status, setStatus] = useState("");
+    
     const handlePublish = async (): Promise<void> => {
         try {
             const action = buttonStatus ? "OFF" : "ON";
@@ -184,52 +95,37 @@ export function DataChart({
         }
         console.log(status);
     };
-    const staticData =
-        staticSensorData[sensorType] || staticSensorData["Light sensor"];
 
-    const {
-        sensor,
-        title,
-        physical_quantity,
-        suitable,
-        device,
-        maxValue,
-        sensor_icon: SensorIcon,
-        device_icon_on: DeviceIconOn,
-        device_icon_off: DeviceIconOff,
-        chartConfig,
-    } = staticData;
-
-    const { time, last_time_updated, device_status, chartData } = dynamicData;
-
-    const max_angle = calculateMaxAngle(chartData[0].value, maxValue);
+    const max_angle = calculateAngle(sensor.value.currentValue, sensor.value.maxValue);
 
     const [switchStatus, setSwitchStatus] = useState<boolean>(
-        device_status === "On"
+        sensor.control_device.status
     );
 
     useEffect(() => {
-        setSwitchStatus(device_status === "On");
-    }, [device_status]);
+        setSwitchStatus(!sensor.control_device.status);
+    }, [sensor.control_device.status]);
 
     const handleSwitchChange = (checked: boolean) => {
         setSwitchStatus(checked);
-        onDeviceStatusChange(sensorType, checked);
+        onDeviceStatusChange(sensor.name, checked);
     };
+
+    const dateTime = new Date().toLocaleTimeString() + " on " + new Date().toLocaleDateString();
 
     return (
         <Card className="flex flex-col">
             <CardHeader className="items-center pb-0">
-                <CardTitle>{sensor}</CardTitle>
-                <CardDescription>{time}</CardDescription>
+                <CardTitle>{sensor.name}</CardTitle>
+                <CardDescription>{dateTime}</CardDescription>
             </CardHeader>
             <CardContent className="flex-1 pb-0">
                 <ChartContainer
-                    config={chartConfig}
+                    config={createChartConfig(sensor)}
                     className="mx-auto aspect-square max-h-[250px]"
                 >
                     <RadialBarChart
-                        data={chartData}
+                        data={[createChartData(sensor)]}
                         startAngle={0}
                         endAngle={max_angle}
                         innerRadius={80}
@@ -271,14 +167,14 @@ export function DataChart({
                                                     y={viewBox.cy}
                                                     className="fill-foreground text-4xl font-bold"
                                                 >
-                                                    {chartData[0].value.toLocaleString()}
+                                                    {sensor.value.currentValue.toLocaleString()}
                                                 </tspan>
                                                 <tspan
                                                     x={viewBox.cx}
                                                     y={(viewBox.cy || 0) + 24}
                                                     className="fill-muted-foreground"
                                                 >
-                                                    {physical_quantity}
+                                                    {sensor.unit_symbol}
                                                 </tspan>
                                             </text>
                                         );
@@ -290,14 +186,13 @@ export function DataChart({
                 </ChartContainer>
             </CardContent>
 
-            {sensor !== "Temperature sensor" &&
-                sensor !== "Humidity sensor" && (
+            {sensor.control_device.name !== "" && (
                     <div className="flex flex-col items-center gap-2 p-4 pb-7">
                         <p className="p-2 pb-4 text-3xl font-semibold leading-none tracking-tight">
-                            {device}
+                            {sensor.control_device.name}
                         </p>
                         <div className="flex items-center">
-                            <DeviceIconOff className="mr-4 h-10 w-10" />
+                            {React.createElement(sensor.control_device.iconOn, { className: "mr-4 h-10 w-10" })}
                             <Switch
                                 onClick={handlePublish}
                                 className="mx-6"
@@ -311,18 +206,18 @@ export function DataChart({
                                 checked={switchStatus}
                                 onCheckedChange={handleSwitchChange}
                             />
-                            <DeviceIconOn className="ml-4 h-10 w-10" />
-                        </div>
+                            {React.createElement(sensor.control_device.iconOff, { className: "mr-4 h-10 w-10" })}
+                            </div>
                     </div>
                 )}
 
             <CardFooter className="flex-col gap-2 text-sm">
                 <div className="flex items-center gap-2 font-medium leading-none">
-                    {title} should be less than {suitable}{" "}
+                    {sensor.unit_name} should be less than {sensor.value.normalValue}{" "}
                     <TrendingUp className="h-4 w-4" />
                 </div>
                 <div className="leading-none text-muted-foreground">
-                    Updated {last_time_updated} ago
+                    Updated {sensor.last_time_updated}
                 </div>
             </CardFooter>
         </Card>

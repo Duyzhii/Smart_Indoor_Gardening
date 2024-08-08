@@ -30,16 +30,16 @@ async function setupMQTTConnection() {
     });
 
     client.on("connect", () => {
-        console.log("Connected to MQTT broker");
+        // console.log("Connected to MQTT broker");
         client.subscribe([topic], () => {
-            console.log(`Subscribe to topic '${topic}'`);
+            // console.log(`Subscribe to topic '${topic}'`);
         });
         isConnecting = false;
     });
 
     client.on("message", (topic, payload) => {
         const message = payload.toString();
-        console.log("Message received: ", message);
+        // console.log("Message received: ", message);
         latestMessage = message;
     });
 

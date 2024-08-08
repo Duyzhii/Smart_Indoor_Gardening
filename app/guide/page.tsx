@@ -1,6 +1,6 @@
 import React from "react";
 import PlantCard from "@/components/PlantCard";
-import plantData from "@/lib/data";
+import { plantData } from "@/lib/data";
 
 const Home: React.FC = () => {
     const plants = plantData.map((plant, index) => (

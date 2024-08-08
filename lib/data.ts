@@ -1,13 +1,21 @@
-import { spec } from "node:test/reporters";
 import { 
     Leaf, 
     Sun, 
     Droplet, 
     Wheat, 
     ArrowDown01, 
-    Ruler
+    Ruler,
+    Thermometer,
+    Droplets,
+    Fan,
+    Bug,
+    Lightbulb,
+    LightbulbOff,
+    Power,
+    PowerOff,
 } 
 from "lucide-react";
+import { Sensor } from "./definitions";
 
 // Plant Specifications Data
 const plantData = [
@@ -15,6 +23,12 @@ const plantData = [
         name: "Bok Choy",
         image: "https://www.washingtonpost.com/resizer/xJpo8VST05Rc11Qge8SlXMhKTbE=/arc-anglerfish-washpost-prod-washpost/public/YW5B6QTDRII6HKUB4HNLCNQDEM",
         specifications: [
+            { Icon: Leaf, title: 'Type', value: 'Annuals', color: '#22c55e' },
+            { Icon: Sun, title: 'Sun', value: 'Full, Partial', color: '#eab308' },
+            { Icon: Droplet, title: 'Water', value: 'Average', color: '#3b82f6' },
+            { Icon: Wheat, title: 'Harvest', value: '30-35 days', color: '#f97316' },
+            { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
+            { Icon: Ruler, title: 'Height', value: '15cm - 60cm', color: '#14b8a6' },
             { Icon: Leaf, title: 'Type', value: 'Annuals', color: '#22c55e' },
             { Icon: Sun, title: 'Sun', value: 'Full, Partial', color: '#eab308' },
             { Icon: Droplet, title: 'Water', value: 'Average', color: '#3b82f6' },
@@ -33,12 +47,24 @@ const plantData = [
             { Icon: Wheat, title: 'Harvest', value: '60-90 days', color: '#f97316' },
             { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
             { Icon: Ruler, title: 'Height', value: '2m - 3m', color: '#14b8a6' },
+            { Icon: Leaf, title: 'Type', value: 'Annuals', color: '#22c55e' },
+            { Icon: Sun, title: 'Sun', value: 'Full', color: '#eab308' },
+            { Icon: Droplet, title: 'Water', value: 'Average', color: '#3b82f6' },
+            { Icon: Wheat, title: 'Harvest', value: '60-90 days', color: '#f97316' },
+            { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
+            { Icon: Ruler, title: 'Height', value: '2m - 3m', color: '#14b8a6' },
         ]
     },
     {
         name: "White Carrot Sprouts",
         image: "https://image.plo.vn/w1000/Uploaded/2024/bpcpcwvo/2014_12_29/rau_mam2_LQTJ.jpg.webp",
         specifications: [
+            { Icon: Leaf, title: 'Type', value: 'Annuals', color: '#22c55e' },
+            { Icon: Sun, title: 'Sun', value: 'Full, Partial', color: '#eab308' },
+            { Icon: Droplet, title: 'Water', value: 'Average', color: '#3b82f6' },
+            { Icon: Wheat, title: 'Harvest', value: '30-35 days', color: '#f97316' },
+            { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
+            { Icon: Ruler, title: 'Height', value: '15cm - 60cm', color: '#14b8a6' },
             { Icon: Leaf, title: 'Type', value: 'Annuals', color: '#22c55e' },
             { Icon: Sun, title: 'Sun', value: 'Full, Partial', color: '#eab308' },
             { Icon: Droplet, title: 'Water', value: 'Average', color: '#3b82f6' },
@@ -57,12 +83,24 @@ const plantData = [
             { Icon: Wheat, title: 'Harvest', value: '60-90 days', color: '#f97316' },
             { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
             { Icon: Ruler, title: 'Height', value: '1m - 2m', color: '#14b8a6' },
+            { Icon: Leaf, title: 'Type', value: 'Annuals', color: '#22c55e' },
+            { Icon: Sun, title: 'Sun', value: 'Full', color: '#eab308' },
+            { Icon: Droplet, title: 'Water', value: 'Average', color: '#3b82f6' },
+            { Icon: Wheat, title: 'Harvest', value: '60-90 days', color: '#f97316' },
+            { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
+            { Icon: Ruler, title: 'Height', value: '1m - 2m', color: '#14b8a6' },
         ]
     },
     {
         name: "Zucchini",
         image: "https://cdn.britannica.com/96/138896-050-A640EBE8/Zucchini-vines.jpg",
         specifications: [
+            { Icon: Leaf, title: 'Type', value: 'Annuals', color: '#22c55e' },
+            { Icon: Sun, title: 'Sun', value: 'Full', color: '#eab308' },
+            { Icon: Droplet, title: 'Water', value: 'Average', color: '#3b82f6' },
+            { Icon: Wheat, title: 'Harvest', value: '60-90 days', color: '#f97316' },
+            { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
+            { Icon: Ruler, title: 'Height', value: '45cm - 60cm', color: '#14b8a6' },
             { Icon: Leaf, title: 'Type', value: 'Annuals', color: '#22c55e' },
             { Icon: Sun, title: 'Sun', value: 'Full', color: '#eab308' },
             { Icon: Droplet, title: 'Water', value: 'Average', color: '#3b82f6' },
@@ -81,6 +119,12 @@ const plantData = [
             { Icon: Wheat, title: 'Harvest', value: '50-70 days', color: '#f97316' },
             { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
             { Icon: Ruler, title: 'Height', value: '30cm - 60cm', color: '#14b8a6' },
+            { Icon: Leaf, title: 'Type', value: 'Annuals', color: '#22c55e' },
+            { Icon: Sun, title: 'Sun', value: 'Full', color: '#eab308' },
+            { Icon: Droplet, title: 'Water', value: 'Average', color: '#3b82f6' },
+            { Icon: Wheat, title: 'Harvest', value: '50-70 days', color: '#f97316' },
+            { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
+            { Icon: Ruler, title: 'Height', value: '30cm - 60cm', color: '#14b8a6' },
         ]
     },
     {
@@ -93,9 +137,146 @@ const plantData = [
             { Icon: Wheat, title: 'Harvest', value: '60-90 days', color: '#f97316' },
             { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
             { Icon: Ruler, title: 'Height', value: '30cm - 60cm', color: '#14b8a6' },
+            { Icon: Leaf, title: 'Type', value: 'Annuals', color: '#22c55e' },
+            { Icon: Sun, title: 'Sun', value: 'Full', color: '#eab308' },
+            { Icon: Droplet, title: 'Water', value: 'Average', color: '#3b82f6' },
+            { Icon: Wheat, title: 'Harvest', value: '60-90 days', color: '#f97316' },
+            { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
+            { Icon: Ruler, title: 'Height', value: '30cm - 60cm', color: '#14b8a6' },
         ]
     },
 ];
 
+const sensorName = ["light", "temperature", "soil_moisture", "humidity", "air_quality", "pir"];
 
-export default plantData;
+const projectSensor : Record<string, Sensor> = {
+    light: {
+        name: "Light sensor",
+        value:{
+            currentValue: 150, // Initial value
+            normalValue: 200, // Normal value
+            maxValue: 1000, // Max value
+        },
+        unit_name: "Light intensity",
+        unit_symbol: "lux",
+        icon: {
+            icon: Sun,
+            color: "#f59e0b",
+        },
+        last_time_updated: "2 minutes",
+        control_device: {
+            name: "Light Bulb",
+            status: false,
+            iconOn: Lightbulb,
+            iconOff: LightbulbOff
+        },
+    },
+    temperature: {
+        name: "Temperature sensor",
+        value: {
+            currentValue: 25, // Initial value
+            normalValue: 30, // Normal value
+            maxValue: 50, // Max value
+        },
+        unit_name: "Temperature",
+        unit_symbol: "°C",
+        icon: {
+            icon: Thermometer,
+            color: "#F44336",
+        },
+        last_time_updated: "2 minutes",
+        control_device: {
+            name: "",
+            status: false,
+            iconOn: null,
+            iconOff: null
+        },
+    },
+    soil_moisture: {
+        name: "Soil moisture sensor",
+        value: {
+            currentValue: 50, // Initial value
+            normalValue: 70, // Normal value
+            maxValue: 100, // Max value
+        },
+        unit_name: "Soil moisture",
+        unit_symbol: "%",
+        icon: {
+            icon: Droplets,
+            color: "#9C27B0",
+        },
+        last_time_updated: "2 minutes",
+        control_device: {
+            name: "Water Pump",
+            status: true,
+            iconOn: Power,
+            iconOff: PowerOff
+        },
+    },
+    humidity: {
+        name: "Humidity sensor",
+        value: {
+            currentValue: 60, // Initial value
+            normalValue: 70, // Normal value
+            maxValue: 100, // Max value
+        },
+        unit_name: "Humidity",
+        unit_symbol: "%",
+        icon: {
+            icon: Droplet,
+            color: "#3b82f6",
+        },
+        last_time_updated: "2 minutes",
+        control_device: {
+            name: "",
+            status: false,
+            iconOn: null,
+            iconOff: null
+        },
+    },
+    air_quality: {
+        name: "Air quality sensor",
+        value: {
+            currentValue: 75, // Initial value
+            normalValue: 80, // Normal value
+            maxValue: 100, // Max value
+        },
+        unit_name: "Air quality",
+        unit_symbol: "ppm",
+        icon: {
+            icon: Fan,
+            color: "#4CAF50",
+        },
+        last_time_updated: "2 minutes",
+        control_device: {
+            name: "Fan",
+            status: true,
+            iconOn: Power,
+            iconOff: PowerOff
+        },
+    },
+    pir: {
+        name: "PIR sensor",
+        value: {
+            currentValue: 0, // Initial value
+            normalValue: 0, // Normal value
+            maxValue: 1, // Max value
+        },
+        unit_name: "Bug(s)",
+        unit_symbol: "bug detected",
+        icon: {
+            icon: Bug,
+            color: "#f59e0b",
+        },
+        last_time_updated: "2 minutes",
+        control_device: {
+            name: "",
+            status: false,
+            iconOn: null,
+            iconOff: null
+        },
+    },
+};
+
+
+export { plantData, projectSensor };
