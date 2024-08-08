@@ -1,6 +1,5 @@
 import React from "react";
 import PlantCard from "@/components/PlantCard";
-import { Leaf, Droplet, Sun, Wheat, ArrowDown01, Ruler } from "lucide-react";
 import plantData from "@/lib/data";
 
 const Home: React.FC = () => {
