@@ -111,7 +111,7 @@ export function DataChart({
         onDeviceStatusChange(sensor.name, checked);
     };
 
-    const dateTime = new Date().toLocaleTimeString() + " of " + new Date().toLocaleDateString();
+    const dateTime = new Date().toLocaleTimeString() + " on " + new Date().toLocaleDateString();
 
     return (
         <Card className="flex flex-col">

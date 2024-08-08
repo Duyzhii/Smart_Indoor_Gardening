@@ -34,11 +34,11 @@ const SensorCard: React.FC<{
                 `!h-48 bg-${sensor.icon.color}-100 flex flex-col justify-center items-center p-4 rounded-2xl solid-`
             )}
         >
-            <div className="text-center leading-tight">
+            <div className="text-center justify-center leading-tight">
                 <div className="flex justify-center mb-2">
-                <div style={{ color }} className="text-4xl mr-4">
-                    {React.createElement(sensor.icon.icon, {})}
-                </div>
+                    <div style={{ color }} className="text-4xl">
+                        {React.createElement(sensor.icon.icon)}
+                    </div>
                 </div>
                 <p className="font-bold text-lg mb-1 break-words text-center">
                     {sensor.name}
