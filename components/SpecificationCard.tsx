@@ -13,8 +13,8 @@ const SpecificationCard: React.FC<SpecificationCardProps> = ({ Icon, title, valu
   return (
     <div className="card bg-base-100 shadow-xl pl-4 pr-4 py-1 hover:shadow-xl transition-shadow duration-300">
       <div className="flex items-center">
-        <div className={`text-4xl mr-4 ${color}`}>
-          <Icon className={`text-current ${color}`} />
+        <div style={{color}} className={`text-4xl mr-4`}>
+          <Icon className={`text-current`} />
         </div>
         <div>
           <h2 className={`card-title text-base font-semibold ${color}`}>{title}</h2>

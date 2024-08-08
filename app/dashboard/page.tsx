@@ -5,7 +5,8 @@ import DataChart from "@/components/DataChart";
 import { useEffect, useState } from "react";
 import Slider from "@/components/Slider";
 import { requestData } from "../actions/mqttActions";
-
+import { projectSensor } from "@/lib/data";
+ 
 interface DynamicSensorData {
     time: string;
     last_time_updated: string;
@@ -13,65 +14,12 @@ interface DynamicSensorData {
     chartData: { browser: string; value: number; fill: string };
 }
 
-// {"light":384,"soil":371,"air":370,"PIR":0,"humidity":null,"temperature":null}
-
-const initialDynamicSensorData = {
-    light: {
-        time: "4:20pm - 23/7/2024",
-        last_time_updated: "2 minutes",
-        device_status: "Off",
-        chartData: {
-            browser: "safari",
-            value: 150,
-            fill: "var(--color-safari)",
-        },
-    },
-    temperature: {
-        time: "4:20pm - 23/7/2024",
-        last_time_updated: "2 minutes",
-        chartData: {
-            browser: "safari",
-            value: 25,
-            fill: "var(--color-safari)",
-        },
-    },
-    soil: {
-        time: "4:20pm - 23/7/2024",
-        last_time_updated: "2 minutes",
-        device_status: "On",
-        chartData: {
-            browser: "safari",
-            value: 100,
-            fill: "var(--color-safari)",
-        },
-    },
-    air: {
-        time: "4:20pm - 23/7/2024",
-        last_time_updated: "2 minutes",
-        device_status: "On",
-        chartData: {
-            browser: "safari",
-            value: 75,
-            fill: "var(--color-safari)",
-        },
-    },
-    humidity: {
-        time: "4:20pm - 23/7/2024",
-        last_time_updated: "2 minutes",
-        chartData: {
-            browser: "safari",
-            value: 60,
-            fill: "var(--color-safari)",
-        },
-    },
-};
-
 function DashboardPage() {
     const [selectedSensor, setSelectedSensor] =
-        useState<string>("Light sensor");
+        useState<string>("light");
     const [dynamicSensorData, setDynamicSensorData] = useState<
         Record<string, any>
-    >(initialDynamicSensorData);
+    >({});
 
     const handleDeviceStatusChange = (
         sensorType: string,
@@ -92,23 +40,21 @@ function DashboardPage() {
 
             // parse response data to DynamicSensorData
             const data = JSON.parse(response);
-            console.log("Data: ", data);
 
             const newSensorData: Record<string, DynamicSensorData> = {};
 
             for (const [key, value] of Object.entries(data)) {
                 newSensorData[key] = {
-                    time: "4:20pm - 23/7/2024",
-                    last_time_updated: "2 minutes",
-                    device_status: "On",
+                    // Get the current time and convert to string
+                    time: new Date().toLocaleTimeString(),
+                    last_time_updated: "2 minutes ago",
+                    device_status: dynamicSensorData[key].device_status,
                     chartData: {
                         browser: "safari",
                         value: value as number,
                         fill: "var(--color-safari)",
                     },
                 };
-
-                console.log("Key: ", key, " | Value: ", value);
             }
 
             console.log("New Sensor Data: ", newSensorData);
@@ -124,10 +70,13 @@ function DashboardPage() {
 
     return (
         <div className="space-y-6 w-4/5 mx-auto">
+            <DataChart 
+                sensor={projectSensor[selectedSensor]} 
+                onDeviceStatusChange={handleDeviceStatusChange} 
+            />
             <div className="flex gap-4 w-full">
                 <DataBox
                     onSelectSensor={setSelectedSensor}
-                    dynamicData={dynamicSensorData}
                 />
             </div>
         </div>
