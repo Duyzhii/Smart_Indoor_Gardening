@@ -2,45 +2,25 @@
 
 import DataBox from "@/components/DataBox";
 import DataChart from "@/components/DataChart";
-import { useState } from "react";
-import  Slider from "@/components/Slider";
+import { useEffect, useState } from "react";
+import Slider from "@/components/Slider";
+import { requestData } from "../actions/mqttActions";
+import { projectSensor } from "@/lib/data";
+ 
+interface DynamicSensorData {
+    time: string;
+    last_time_updated: string;
+    device_status?: string;
+    chartData: { browser: string; value: number; fill: string };
+}
 
-
-
-const initialDynamicSensorData = {
-  "Light sensor": {
-    time: "4:20pm - 23/7/2024",
-    last_time_updated: "2 minutes",
-    device_status: "Off",
-    chartData: [{ browser: "safari", value: 125, fill: "var(--color-safari)" }],
-  },
-  "Temperature sensor": {
-    time: "4:20pm - 23/7/2024",
-    last_time_updated: "2 minutes",
-    chartData: [{ browser: "safari", value: 25, fill: "var(--color-safari)" }],
-  },
-  "Soil moisture sensor": {
-    time: "4:20pm - 23/7/2024",
-    last_time_updated: "2 minutes",
-    device_status: "Off",
-    chartData: [{ browser: "safari", value: 100, fill: "var(--color-safari)" }],
-  },
-  "Air quality sensor": {
-    time: "4:20pm - 23/7/2024",
-    last_time_updated: "2 minutes",
-    device_status: "On",
-    chartData: [{ browser: "safari", value: 75, fill: "var(--color-safari)" }],
-  },
-  "Humidity sensor": {
-    time: "4:20pm - 23/7/2024",
-    last_time_updated: "2 minutes",
-    chartData: [{ browser: "safari", value: 10, fill: "var(--color-safari)" }],
-  },
-};
 
 function DashboardPage() {
-  const [selectedSensor, setSelectedSensor] = useState<string>("Light sensor");
-  const [dynamicSensorData, setDynamicSensorData] = useState<Record<string, any>>(initialDynamicSensorData);
+    const [selectedSensor, setSelectedSensor] =
+        useState<string>("light");
+    const [dynamicSensorData, setDynamicSensorData] = useState<
+        Record<string, any>
+    >({});
 
   const handleDeviceStatusChange = (sensorType: string, newStatus: boolean) => {
     setDynamicSensorData(prevState => ({
@@ -51,25 +31,66 @@ function DashboardPage() {
       }
     }));
   };
+  const handleDeviceStatusChange = (
+    sensorType: string,
+    newStatus: boolean
+) => {
+    setDynamicSensorData((prevState) => ({
+        ...prevState,
+        [sensorType]: {
+            ...prevState[sensorType],
+            device_status: newStatus ? "On" : "Off",
+        },
+    }));
+};
 
-  return (
+useEffect(() => {
+    const fetchSensorData = async () => {
+        const response = await requestData();
+
+        // parse response data to DynamicSensorData
+        const data = JSON.parse(response);
+
+        const newSensorData: Record<string, DynamicSensorData> = {};
+
+        for (const [key, value] of Object.entries(data)) {
+            newSensorData[key] = {
+                // Get the current time and convert to string
+                time: new Date().toLocaleTimeString(),
+                last_time_updated: "2 minutes ago",
+                device_status: dynamicSensorData[key].device_status,
+                chartData: {
+                    browser: "safari",
+                    value: value as number,
+                    fill: "var(--color-safari)",
+                },
+            };
+        }
+
+        console.log("New Sensor Data: ", newSensorData);
+
+        setDynamicSensorData(newSensorData);
+    };
+
+    fetchSensorData();
+    const interval = setInterval(fetchSensorData, 5000);
+
+    return () => clearInterval(interval);
+}, []);
+
+return (
     <div className="space-y-6 w-11/12 mx-auto">
-      <Slider />
-
-      <DataChart 
-          sensorType={selectedSensor} 
-          dynamicData={dynamicSensorData[selectedSensor]} 
-          onDeviceStatusChange={handleDeviceStatusChange} 
-      />
-      
-      <div className="flex gap-4 w-full">
-        <DataBox 
-          onSelectSensor={setSelectedSensor} 
-          dynamicData={dynamicSensorData} 
+        <DataChart 
+            sensor={projectSensor[selectedSensor]} 
+            onDeviceStatusChange={handleDeviceStatusChange} 
         />
-      </div>
+        <div className="flex gap-4 w-full">
+            <DataBox
+                onSelectSensor={setSelectedSensor}
+            />
+        </div>
     </div>
-  );
+);
 }
 
 export default DashboardPage;
