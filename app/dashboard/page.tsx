@@ -22,75 +22,66 @@ function DashboardPage() {
         Record<string, any>
     >({});
 
-  const handleDeviceStatusChange = (sensorType: string, newStatus: boolean) => {
-    setDynamicSensorData(prevState => ({
-      ...prevState,
-      [sensorType]: {
-        ...prevState[sensorType],
-        device_status: newStatus ? "On" : "Off"
-      }
-    }));
+    const handleDeviceStatusChange = (
+      sensorType: string,
+      newStatus: boolean
+  ) => {
+      setDynamicSensorData((prevState) => ({
+          ...prevState,
+          [sensorType]: {
+              ...prevState[sensorType],
+              device_status: newStatus ? "On" : "Off",
+          },
+      }));
   };
-  const handleDeviceStatusChange = (
-    sensorType: string,
-    newStatus: boolean
-) => {
-    setDynamicSensorData((prevState) => ({
-        ...prevState,
-        [sensorType]: {
-            ...prevState[sensorType],
-            device_status: newStatus ? "On" : "Off",
-        },
-    }));
-};
 
-useEffect(() => {
-    const fetchSensorData = async () => {
-        const response = await requestData();
+  useEffect(() => {
+      const fetchSensorData = async () => {
+          const response = await requestData();
 
-        // parse response data to DynamicSensorData
-        const data = JSON.parse(response);
+          // parse response data to DynamicSensorData
+          const data = JSON.parse(response);
 
-        const newSensorData: Record<string, DynamicSensorData> = {};
+          const newSensorData: Record<string, DynamicSensorData> = {};
 
-        for (const [key, value] of Object.entries(data)) {
-            newSensorData[key] = {
-                // Get the current time and convert to string
-                time: new Date().toLocaleTimeString(),
-                last_time_updated: "2 minutes ago",
-                device_status: dynamicSensorData[key].device_status,
-                chartData: {
-                    browser: "safari",
-                    value: value as number,
-                    fill: "var(--color-safari)",
-                },
-            };
-        }
+          for (const [key, value] of Object.entries(data)) {
+              newSensorData[key] = {
+                  // Get the current time and convert to string
+                  time: new Date().toLocaleTimeString(),
+                  last_time_updated: "2 minutes ago",
+                  device_status: dynamicSensorData[key].device_status,
+                  chartData: {
+                      browser: "safari",
+                      value: value as number,
+                      fill: "var(--color-safari)",
+                  },
+              };
+          }
 
-        console.log("New Sensor Data: ", newSensorData);
+          console.log("New Sensor Data: ", newSensorData);
 
-        setDynamicSensorData(newSensorData);
-    };
+          setDynamicSensorData(newSensorData);
+      };
 
-    fetchSensorData();
-    const interval = setInterval(fetchSensorData, 5000);
+      fetchSensorData();
+      const interval = setInterval(fetchSensorData, 5000);
 
-    return () => clearInterval(interval);
-}, []);
+      return () => clearInterval(interval);
+  }, []);
 
-return (
-    <div className="space-y-6 w-11/12 mx-auto">
-        <DataChart 
-            sensor={projectSensor[selectedSensor]} 
-            onDeviceStatusChange={handleDeviceStatusChange} 
-        />
-        <div className="flex gap-4 w-full">
-            <DataBox
-                onSelectSensor={setSelectedSensor}
-            />
-        </div>
-    </div>
-);
+  return (
+      <div className="space-y-6 w-11/12 mx-auto">
+          <DataChart 
+              sensor={projectSensor[selectedSensor]} 
+              onDeviceStatusChange={handleDeviceStatusChange} 
+          />
+          <div className="flex gap-4 w-full">
+              <DataBox
+                  onSelectSensor={setSelectedSensor}
+              />
+          </div>
+      </div>
+  );
 }
 
 export default DashboardPage;
