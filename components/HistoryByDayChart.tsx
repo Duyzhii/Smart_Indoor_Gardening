@@ -17,8 +17,18 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart";
-const sensorData = {
-    "light-sensor": [
+
+interface SensorData {
+    day: string;
+    data: number;
+}
+
+interface SensorDataMap {
+    [key: string]: SensorData[];
+}
+
+const sensorData: SensorDataMap = {
+    "Light-Sensor": [
         { day: "Monday", data: 100 },
         { day: "Tuesday", data: 150 },
         { day: "Wednesday", data: 120 },
@@ -27,7 +37,7 @@ const sensorData = {
         { day: "Saturday", data: 90 },
         { day: "Sunday", data: 110 },
     ],
-    "soil-sensor": [
+    "Temperature-Sensor": [
         { day: "Monday", data: 80 },
         { day: "Tuesday", data: 90 },
         { day: "Wednesday", data: 85 },
@@ -36,11 +46,38 @@ const sensorData = {
         { day: "Saturday", data: 82 },
         { day: "Sunday", data: 10 },
     ],
+    "Soil-Moisture-Sensor": [
+        { day: "Monday", data: 45 },
+        { day: "Tuesday", data: 50 },
+        { day: "Wednesday", data: 55 },
+        { day: "Thursday", data: 60 },
+        { day: "Friday", data: 65 },
+        { day: "Saturday", data: 70 },
+        { day: "Sunday", data: 75 },
+    ],
+    "Humidity-Sensor": [
+        { day: "Monday", data: 60 },
+        { day: "Tuesday", data: 62 },
+        { day: "Wednesday", data: 64 },
+        { day: "Thursday", data: 66 },
+        { day: "Friday", data: 68 },
+        { day: "Saturday", data: 70 },
+        { day: "Sunday", data: 72 },
+    ],
+    "Air-Quality-Sensor": [
+        { day: "Monday", data: 40 },
+        { day: "Tuesday", data: 45 },
+        { day: "Wednesday", data: 50 },
+        { day: "Thursday", data: 55 },
+        { day: "Friday", data: 60 },
+        { day: "Saturday", data: 65 },
+        { day: "Sunday", data: 70 },
+    ],
 };
 
 const chartConfig = {
     data: {
-        label: "Sensor Data", // Adjust The label for sensor name
+        label: "Sensor Data",
         color: "hsl(var(--chart-2))",
     },
 } satisfies ChartConfig;
@@ -48,15 +85,20 @@ const chartConfig = {
 // Props
 interface HistoryByDayChartProps {
     sensorType: string;
+    startDate: string;
+    endDate: string;
 }
 
-export function HistoryByDayChart({ sensorType }: HistoryByDayChartProps) {
+export function HistoryByDayChart({ sensorType, startDate, endDate }: HistoryByDayChartProps) {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Week Data</CardTitle>
-                {/* <-- Adjust the date range --> */}
-                <CardDescription>1/1 - 8/1 2024</CardDescription>
+                <CardTitle className="mx-auto pb-2">
+                    {sensorType.replace(/-/g, " ")}
+                </CardTitle>
+                <CardDescription className = "mx-auto">
+                    {startDate} - {endDate}
+                </CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer config={chartConfig}>
@@ -86,9 +128,6 @@ export function HistoryByDayChart({ sensorType }: HistoryByDayChartProps) {
                     The parameters of each sensor for each day of the week{" "}
                     <TrendingUp className="h-4 w-4" />
                 </div>
-                {/* <div className="leading-none text-muted-foreground">
-                    Showing total visitors for the last 6 months
-                </div> */}
             </CardFooter>
         </Card>
     );

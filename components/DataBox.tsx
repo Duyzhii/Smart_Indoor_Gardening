@@ -7,35 +7,35 @@ import { cn } from "@/lib/utils";
 
 const staticData: Record<string, any> = {
   "Light sensor": {
-    name: "Light sensor",
+    name: "Light Intensity",
     unit: "lux",
     icon: Sun,
     color: "yellow",
     device: "Light Bulb",
   },
   "Temperature sensor": {
-    name: "Temperature sensor",
+    name: "Temperature",
     unit: "°C",
     icon: Thermometer,
     color: "red",
     device: "",
   },
   "Soil moisture sensor": {
-    name: "Soil moisture sensor",
+    name: "Soil moisture",
     unit: "%",
     icon: Droplets,
     color: "green",
     device: "Water Pump",
   },
   "Humidity sensor": {
-    name: "Humidity sensor",
+    name: "Humidity",
     unit: "%",
     icon: Droplet,
     color: "blue",
     device: "",
   },
   "Air quality sensor": {
-    name: "Air quality sensor",
+    name: "Air Quality ",
     unit: "ppm",
     icon: Fan,
     color: "blue",
@@ -58,8 +58,8 @@ const SensorCard: React.FC<{ sensor: string; data: any; onSelectSensor: (sensorT
       onClick={() => onSelectSensor(sensor)}
       className={cn(buttonVariants({
         variant: "databox",
-        size: "lg",
-      }), `!h-48 bg-${color}-100 flex flex-col justify-center items-center p-4 rounded-2xl solid-`)}
+        size: "sm",
+      }), `!h-44 bg-${color}-100 flex flex-col justify-center items-center p-4 rounded-2xl border-2`)}
     >
       <div className='text-center leading-tight'>
         <div className='flex justify-center mb-2'>
@@ -67,10 +67,10 @@ const SensorCard: React.FC<{ sensor: string; data: any; onSelectSensor: (sensorT
         </div>
         <p className="font-bold text-lg mb-1 break-words text-center">{name}</p>
         <p className="text-xl mb-1">
-          <span className="font-extrabold text-2xl">{value}</span> <span className="text-base">({unit})</span>
+          <span className="font-extrabold text-2xl">{value}</span> <span className="text-base">{unit}</span>
         </p>
         {device && (
-          <div className = {`mt-2  rounded-2xl p-1 ${status === "On" ? "bg-green-500" : "bg-red-500"}`}>
+          <div className = {`mt-2 rounded-2xl p-1 ${status === "On" ? "bg-green-500" : "bg-red-500"}`}>
             <p className= "text-xs text-white">
               {device}: {status}
             </p>
@@ -106,7 +106,7 @@ function DataBox({ onSelectSensor, dynamicData }: DataBoxProps) {
             key={sensor}
             sensor={sensor}
             data={dynamicData[sensor] || {}}
-            onSelectSensor={onSelectSensor}
+            onSelectSensor= {onSelectSensor}
           />
         ))}
       </div>
