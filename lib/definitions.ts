@@ -9,6 +9,7 @@ export type SensorValue = {
     currentValue: number;
     normalValue: number;
     maxValue: number;
+    minValue: number;
 }
 
 export type Sensor = {

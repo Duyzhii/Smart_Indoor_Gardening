@@ -1,9 +1,17 @@
+"use client";
+
 import nodemailer from 'nodemailer';
 import { NextResponse } from 'next/server';
 
 export async function POST(req) {
   try {
     const {type, receiver, receiver_name, user_message} = await req.json();
+
+    if (!type || !receiver || !receiver_name || !user_message) {
+      return NextResponse.json({ message: 'Please fill all fields' }, { status: 400 });
+    }
+
+   
 
     console.log(type, receiver, receiver_name, user_message);
 

@@ -38,6 +38,7 @@ import { toast } from "react-hot-toast";
 interface DataChartProps {
     sensor: Sensor;
     onDeviceStatusChange: (sensorType: string, status: boolean) => void;
+    dateTime: string;
 }
 
 const calculateAngle = (value: number, maxValue: number): number => {
@@ -47,7 +48,7 @@ const calculateAngle = (value: number, maxValue: number): number => {
 
 const createChartConfig = (sensor: Sensor): ChartConfig => {
 
-    // let new_color = getChartColor(sensor.value.currentValue, sensor.value.minValue, sensor.value.normalValue);
+    let new_color = getChartColor(sensor.value.currentValue, sensor.value.minValue, sensor.value.normalValue);
 
     const chartConfig = {
         value: {
@@ -55,7 +56,7 @@ const createChartConfig = (sensor: Sensor): ChartConfig => {
         },
         safari: {
             label: "Safari",
-            color: "hsl(var(--chart-2))",
+            color: new_color,
         },
     };
 
@@ -96,6 +97,7 @@ const getSensorStatus = (value: number, minimum: number, suitable: number): stri
 export function DataChart({
     sensor,
     onDeviceStatusChange,
+    dateTime,
 }: DataChartProps) {
     const topic = sensor.name;
     const [buttonStatus, setButtonStatus] = useState(false);
@@ -121,76 +123,23 @@ export function DataChart({
     };
 
     const max_angle = calculateAngle(sensor.value.currentValue, sensor.value.maxValue);
-    // const sensor_status = getSensorStatus(chartData[0].value, minimum, suitable);
-
+    const sensor_status = getSensorStatus(sensor.value.currentValue, sensor.value.minValue, sensor.value.normalValue);
 
     const [switchStatus, setSwitchStatus] = useState<boolean>(
         sensor.control_device.status
     );
 
-    // useEffect(() => {
-    //   let type = "";
-    //   let message = "";
-  
-    //   if (chartData[0].value > suitable) {
-    //     type = "Alert_Over_Suitable_Value";
-    //     message = `The ${sensor} value is over the suitable value (${chartData[0].value} > ${suitable}) \n
-    //     Please turn off the ${device} to avoid damage.
-    //     `;
-    //     send (type, message);
-    //   }
-  
-    //   else if (chartData[0].value < minimum) {
-    //     type = "Alert_Under_Suitable_Value";
-    //     message = `The ${sensor} value is under the minimum value (${chartData[0].value} < ${minimum}) \n
-    //     Please turn on the ${device} to avoid damage.
-    //     `;
-  
-    //     send (type, message);
-    //   }
-      
-    //   else return;
-  
-    // }, [chartData[0].value]);
-  
-    // const send = async (type: string, message: string) => {
-    //   console.log('Sending email...');
-    //   try {
-    //     const response = await fetch('/api/sendMail', {
-    //       method: 'POST',
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //       },
-    //       body: JSON.stringify({
-    //         type: type,
-    //         receiver: "duyzhii@gmail.com",
-    //         receiver_name: "Duy",
-    //         user_message: message,
-    //       }),
-    //     });
-        
-    //     if (response.ok) {
-    //       console.log('Email sent successfully');
-    //     } else {
-    //       console.error('Failed to send email');
-    //     }
-    //   } catch (error) {
-    //     console.error('Error:', error);
-    //   }
-    // };
     useEffect(() => {
         setSwitchStatus(!sensor.control_device.status);
     }, [sensor.control_device.status]);
-
-    const dateTime = new Date().toLocaleTimeString() + " on " + new Date().toLocaleDateString();
-
 
     const handleSwitchChange = (checked: boolean) => {
         setSwitchStatus(checked);
         onDeviceStatusChange(sensor.name, checked);
 
         toast.success(
-          `${dateTime} `,
+          `The ${sensor.control_device.name} is now ${checked ? "ON" : "OFF"} 
+            at ${dateTime}`,
           {
             duration: 4000,
             icon: checked ? <Power /> : <PowerOff />,
@@ -200,9 +149,9 @@ export function DataChart({
 
 
     return (
-        <Card className="flex flex-col">
+        <Card className="flex flex-col border-2 rounded-2xl">
             <CardHeader className="items-center pb-0">
-                <CardTitle>{sensor.name} {sensor.unit_symbol}</CardTitle>
+                <CardTitle>{sensor.name} ({sensor.unit_symbol})</CardTitle>
                 <CardDescription>{dateTime}</CardDescription>
             </CardHeader>
             <CardContent className="flex-1 pb-0">
@@ -260,8 +209,7 @@ export function DataChart({
                                                    y={(viewBox.cy || 0) + 25}
                                                    className="fill-muted-foreground text-lg"
                                                  >
-                                                  // ! Replace with sensor status
-                                                    {sensor.unit_symbol}
+                                                    {sensor_status}
                                                 </tspan>
                                             </text>
                                         );
@@ -275,14 +223,16 @@ export function DataChart({
 
             {sensor.control_device.name !== "" && (
                    <div className="flex flex-col items-center gap-2 pb-7">
-                    <p className="pb-4 text-2xl font-semibold leading-none tracking-tight">
+                    <p className="pb-4 text-3xl font-semibold leading-none tracking-tight">
                             {sensor.control_device.name}
                         </p>
                         <div className="flex items-center">
-                            {React.createElement(sensor.control_device.iconOn, { className: "mr-4 h-10 w-10" })}
+                            <div className = "mr-9">
+                                {React.createElement(sensor.control_device.iconOn, { className: "h-10 w-10" })}
+                            </div>
                             <Switch
                                 onClick={handlePublish}
-                                className="mx-6"
+                                className="mx-auto"
                                 switchSize="h-12 w-20"
                                 thumbSize="h-9 w-9"
                                 translateX={
@@ -293,13 +243,15 @@ export function DataChart({
                                 checked={switchStatus}
                                 onCheckedChange={handleSwitchChange}
                             />
-                            {React.createElement(sensor.control_device.iconOff, { className: "mr-4 h-10 w-10" })}
+                            <div className = "ml-9">
+                                {React.createElement(sensor.control_device.iconOff, { className: "h-10 w-10" })}
+                            </div>
                             </div>
                     </div>
                 )}
 
             <CardFooter className="flex-col gap-2 text-sm">
-                <div className="flex items-center gap-2 font-medium leading-none">
+                <div className="flex items-center gap-2 font-medium leading-none">      
                     {sensor.unit_name} should be less than {sensor.value.normalValue}{" "}
                     <TrendingUp className="h-4 w-4" />
                 </div>

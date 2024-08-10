@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { projectSensor } from "@/lib/data";
 import { Sensor } from "@/lib/definitions";
 import { Icon } from "next/dist/lib/metadata/types/metadata-types";
+
 interface DataBoxProps {
     onSelectSensor: (sensorType: string) => void;
 }
@@ -13,7 +14,8 @@ interface DataBoxProps {
 const SensorCard: React.FC<{
     sensor: Sensor;
     onSelectSensor: (sensorType: string) => void;
-}> = ({ sensor, onSelectSensor }) => {
+}> = ({ sensor, onSelectSensor}) => {
+
     const color = sensor.icon.color;
 
     return (
@@ -31,13 +33,13 @@ const SensorCard: React.FC<{
                     variant: "databox",
                     size: "lg",
                 }),
-                `!h-44 bg-${sensor.icon.color}-100 flex flex-col justify-center items-center p-4 rounded-2xl border-2`
+                `!h-48 bg-${sensor.icon.color}-100 flex flex-col justify-center items-center p-4 rounded-2xl border-2`
             )}
         >
             <div className="text-center justify-center leading-tight">
                 <div className="flex justify-center mb-2">
-                    <div style={{ color }} className="text-4xl">
-                        {React.createElement(sensor.icon.icon)}
+                    <div style={{ color, width: '32px', height: '32px'}} className="text-4xl">
+                        {React.createElement(sensor.icon.icon, { className: "h-9 w-9" })}
                     </div>
                 </div>
                 <p className="font-bold text-lg mb-1 break-words text-center">
