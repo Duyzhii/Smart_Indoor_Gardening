@@ -85,8 +85,8 @@ function DashboardPage() {
       }
     };
 
-
-
+    
+   
     useEffect(() => {
         const fetchSensorData = async () => {
             try {
@@ -115,8 +115,10 @@ function DashboardPage() {
                 console.error("Error parsing response: ", e);  // Handle cases where response is not valid JSON
             }
         };
+       
+        // checkAndSendAlerts();  // Check and send alerts
 
-        fetchSensorData();  // Initial data fetch
+        // fetchSensorData();  // Initial data fetch
         const interval = setInterval(fetchSensorData, 5000);  // Fetch data every 5 seconds
 
         return () => clearInterval(interval);  // Clear interval on component unmount
@@ -125,7 +127,7 @@ function DashboardPage() {
     useEffect(() => {
         const updateTime = () => setCurrentTime(new Date().toLocaleTimeString());
         updateTime();  // Set initial time
-        const timeInterval = setInterval(updateTime, 5000);  // Update time every second
+        const timeInterval = setInterval(updateTime, 1000);  // Update time every second
 
         return () => clearInterval(timeInterval);  // Clear interval on component unmount
     }, []);

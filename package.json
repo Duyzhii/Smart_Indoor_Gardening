@@ -21,6 +21,7 @@
     "@tanstack/react-table": "^8.19.3",
     "@types/nodemailer": "^6.4.15",
     "add": "^2.0.6",
+    "axios": "^1.7.3",
     "carousel": "^0.0.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

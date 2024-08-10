@@ -33,7 +33,7 @@ import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Switch } from "@/components/ui/switch";
 import { Sensor, ChartData } from "@/lib/definitions";
 import { toast } from "react-hot-toast";
-
+import axios from "axios";
 
 interface DataChartProps {
     sensor: Sensor;
@@ -102,22 +102,49 @@ export function DataChart({
     const topic = sensor.name;
     const [buttonStatus, setButtonStatus] = useState(false);
     const [status, setStatus] = useState("");
+
+    const send = async (type: string, message: string) => {
+        try {
+            console.log('Sending email...');
+          const response = await fetch('/api/sendMail', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              type: type,
+              receiver: "duyzhii@gmail.com",
+              receiver_name: "Duy",
+              user_message: message,
+            }),
+          });
+          
+          if (response.ok) {
+            console.log('Email sent successfully');
+          } else {
+            console.log('Failed to send email 1');
+            console.error('Error:', response.statusText);   
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      };
     
     const handlePublish = async (): Promise<void> => {
         try {
             const action = buttonStatus ? "OFF" : "ON";
-            const result: string = await publishMQTTMessage(
-                `${topic}_${action}`,
-                topic
-            );
+            // const result: string = await publishMQTTMessage(
+            //     `${topic}_${action}`,
+            //     topic
+            // );
             setButtonStatus(!buttonStatus);
-            setStatus(result);
+            // setStatus(result);
         } catch (error: unknown) {
-            if (error instanceof Error) {
-                setStatus("Error: " + error.message);
-            } else {
-                setStatus("An unknown error occurred");
-            }
+            // if (error instanceof Error) {
+            //     setStatus("Error: " + error.message);
+            // } else {
+            //     setStatus("An unknown error occurred");
+            // }
         }
         console.log(status);
     };
@@ -145,6 +172,9 @@ export function DataChart({
             icon: checked ? <Power /> : <PowerOff />,
           }
         );
+
+        send("Alert_Device_Status", `The ${sensor.control_device.name} is now ${checked ? "ON" : "OFF"} at ${dateTime}`);
+        // console.log(`The ${sensor.control_device.name} is now ${checked ? "ON" : "OFF"} at ${dateTime}`);
     };
 
 
