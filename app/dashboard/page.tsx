@@ -59,70 +59,70 @@ function DashboardPage() {
   
     // }, [sensor.value.currentValue]);
   
-    const send = async (type: string, message: string) => {
-      console.log('Sending email...');
-      try {
-        const response = await fetch('/api/sendMail', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            type: type,
-            receiver: "duyzhii@gmail.com",
-            receiver_name: "Duy",
-            user_message: message,
-          }),
-        });
+    // const send = async (type: string, message: string) => {
+    //   console.log('Sending email...');
+    //   try {
+    //     const response = await fetch('/api/sendMail', {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //       },
+    //       body: JSON.stringify({
+    //         type: type,
+    //         receiver: "duyzhii@gmail.com",
+    //         receiver_name: "Duy",
+    //         user_message: message,
+    //       }),
+    //     });
         
-        if (response.ok) {
-          console.log('Email sent successfully');
-        } else {
-          console.error('Failed to send email');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
+    //     if (response.ok) {
+    //       console.log('Email sent successfully');
+    //     } else {
+    //       console.error('Failed to send email');
+    //     }
+    //   } catch (error) {
+    //     console.error('Error:', error);
+    //   }
+    // };
 
     
    
-    useEffect(() => {
-        const fetchSensorData = async () => {
-            try {
-                const response = await requestData();  // Fetch data from server
-                const data = JSON.parse(response);  // Parse the JSON response
+    // useEffect(() => {
+    //     const fetchSensorData = async () => {
+    //         try {
+    //             const response = await requestData();  // Fetch data from server
+    //             const data = JSON.parse(response);  // Parse the JSON response
 
-                const newSensorData: Record<string, DynamicSensorData> = {};
+    //             const newSensorData: Record<string, DynamicSensorData> = {};
 
-                for (const [key, value] of Object.entries(data)) {
-                    newSensorData[key] = {
-                        time: currentTime,  // Use currentTime from state
-                        last_time_updated: "2 minutes ago",  // Example: static string for last update time
-                        device_status: dynamicSensorData[key]?.device_status || "Unknown",  // Handle undefined values
-                        chartData: {
-                            browser: "safari",  // Example data, replace as needed
-                            value: value as number,
-                            fill: "var(--color-safari)",  // Example style, replace as needed
-                        },
-                    };
-                }
+    //             for (const [key, value] of Object.entries(data)) {
+    //                 newSensorData[key] = {
+    //                     time: currentTime,  // Use currentTime from state
+    //                     last_time_updated: "2 minutes ago",  // Example: static string for last update time
+    //                     device_status: dynamicSensorData[key]?.device_status || "Unknown",  // Handle undefined values
+    //                     chartData: {
+    //                         browser: "safari",  // Example data, replace as needed
+    //                         value: value as number,
+    //                         fill: "var(--color-safari)",  // Example style, replace as needed
+    //                     },
+    //                 };
+    //             }
 
-                console.log("New Sensor Data: ", newSensorData);
+    //             console.log("New Sensor Data: ", newSensorData);
 
-                setDynamicSensorData(newSensorData);  // Update state with new sensor data
-            } catch (e) {
-                console.error("Error parsing response: ", e);  // Handle cases where response is not valid JSON
-            }
-        };
+    //             setDynamicSensorData(newSensorData);  // Update state with new sensor data
+    //         } catch (e) {
+    //             console.error("Error parsing response: ", e);  // Handle cases where response is not valid JSON
+    //         }
+    //     };
        
-        // checkAndSendAlerts();  // Check and send alerts
+    //     // checkAndSendAlerts();  // Check and send alerts
 
-        // fetchSensorData();  // Initial data fetch
-        const interval = setInterval(fetchSensorData, 5000);  // Fetch data every 5 seconds
+    //     // fetchSensorData();  // Initial data fetch
+    //     const interval = setInterval(fetchSensorData, 5000);  // Fetch data every 5 seconds
 
-        return () => clearInterval(interval);  // Clear interval on component unmount
-    }, [currentTime]);
+    //     return () => clearInterval(interval);  // Clear interval on component unmount
+    // }, [currentTime]);
 
     useEffect(() => {
         const updateTime = () => setCurrentTime(new Date().toLocaleTimeString());

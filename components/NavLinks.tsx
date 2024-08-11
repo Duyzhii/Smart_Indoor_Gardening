@@ -19,7 +19,7 @@ const links = [
   { name: "Home", href: "/dashboard", icon: Home },
   { name: "History", href: "/history", icon: Cloudy },
   { name: "Guide", href: "/guide", icon: BookText },
-  { name: "Profile", isAvatar: true, href: "./profile", icon: Menu }, 
+  { name: "Profile", isAvatar: true, href: "/activity", icon: Menu }, 
 ];
 
 function NavLinks() {
