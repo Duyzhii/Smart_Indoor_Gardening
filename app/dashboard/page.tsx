@@ -7,11 +7,18 @@ import Slider from "@/components/Slider";
 import { projectSensor } from "@/lib/data";
 import { Sensor } from "@/lib/definitions";
 import { requestData } from "../actions/mqttActions";
+import { getSensorData, uploadHistoryData, uploadSensorData } from "@/database/database";
 
 function DashboardPage() {
     const [selectedSensor, setSelectedSensor] = useState<string>("light");
     const [dynamicSensorData, setDynamicSensorData] = useState<Record<string, Sensor>>(projectSensor);
     const [currentTime, setCurrentTime] = useState<string>("");
+    const updateHistoryData = uploadHistoryData.bind(
+        null,
+        dynamicSensorData
+    );
+
+    console.log("Rebuilding...");
 
     const handleDeviceStatusChange = (sensorType: string, newStatus: boolean) => {
         setDynamicSensorData((prevData) => {
@@ -43,9 +50,9 @@ function DashboardPage() {
                 
                 setDynamicSensorData((prevData) => {
                     for (const [key, sensorValue] of Object.entries(data)) {
-                        // Ensure sensor is defined
                         let sensor: Sensor = prevData[key] || { value: { currentValue: 0 } };  // Default to a new Sensor object if undefined
                         sensor.value.currentValue = sensorValue as number;  // Update sensor value
+                        sensor.last_time_updated = new Date().toISOString();  // Add timestamp
                         newSensorData[key] = sensor;  // Add updated sensor data to new state
                     }
                 
@@ -53,7 +60,20 @@ function DashboardPage() {
                 });
                 
                 console.log("New data: ", data);
-                // setDynamicSensorData(newSensorData);  // Update state with new sensor data
+
+                const dataForUpload = Object.entries(newSensorData).map(([sensorType, sensor]) => ({
+                    sensorType: sensor.name,
+                    value: sensor.value.currentValue,
+                    controlDevice: sensor.control_device.name,
+                    deviceStatus: sensor.control_device.status ? "ON" : "OFF",
+                    timeReport: sensor.last_time_updated
+                }));
+
+                // Upload the new sensor data to the database
+                await uploadSensorData(dataForUpload);
+                const historyData = await getSensorData();
+                console.log("History data: ", historyData);
+
             } catch (e) {
                 console.error("Error parsing response: ", e);  // Handle cases where response is not valid JSON
             }

@@ -207,7 +207,7 @@ export function DataChart({
                                                     y={(viewBox.cy || 0) - 5}
                                                     className="fill-foreground text-4xl font-bold"
                                                 >
-                                                    {sensor.value.currentValue.toLocaleString()}
+                                                    {sensor.value.currentValue?.toLocaleString()}
                                                 </tspan>
                                                 <tspan
                                                    x={(viewBox.cx || 0)}

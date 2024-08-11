@@ -37,3 +37,11 @@ export type DynamicSensorData = {
     device_status?: string;
     chartData: ChartData;
 }
+
+export type SensorData = {
+    sensorType: string;
+    value: number;
+    controlDevice: string;
+    deviceStatus: boolean;
+    timeReport: string;
+}
