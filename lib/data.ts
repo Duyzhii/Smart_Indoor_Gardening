@@ -114,6 +114,7 @@ const projectSensor : Record<string, Sensor> = {
             currentValue: 150, // Initial value
             normalValue: 200, // Normal value
             maxValue: 1000, // Max value
+            minValue: 100, // Min value
         },
         unit_name: "Light intensity",
         unit_symbol: "lux",
@@ -135,6 +136,7 @@ const projectSensor : Record<string, Sensor> = {
             currentValue: 25, // Initial value
             normalValue: 30, // Normal value
             maxValue: 50, // Max value
+            minValue: 10, // Min value
         },
         unit_name: "Temperature",
         unit_symbol: "°C",
@@ -156,6 +158,7 @@ const projectSensor : Record<string, Sensor> = {
             currentValue: 50, // Initial value
             normalValue: 70, // Normal value
             maxValue: 100, // Max value
+            minValue: 60, // Min value
         },
         unit_name: "Soil moisture",
         unit_symbol: "%",
@@ -177,6 +180,7 @@ const projectSensor : Record<string, Sensor> = {
             currentValue: 60, // Initial value
             normalValue: 70, // Normal value
             maxValue: 100, // Max value
+            minValue: 40, // Min value
         },
         unit_name: "Humidity",
         unit_symbol: "%",
@@ -198,6 +202,7 @@ const projectSensor : Record<string, Sensor> = {
             currentValue: 75, // Initial value
             normalValue: 80, // Normal value
             maxValue: 100, // Max value
+            minValue: 60, // Min value
         },
         unit_name: "Air quality",
         unit_symbol: "ppm",
@@ -219,6 +224,7 @@ const projectSensor : Record<string, Sensor> = {
             currentValue: 0, // Initial value
             normalValue: 0, // Normal value
             maxValue: 1, // Max value
+            minValue: 0, // Min value
         },
         unit_name: "Bug(s)",
         unit_symbol: "bug detected",

@@ -6,14 +6,19 @@ import { SelectSensors } from "@/components/SelectSensors";
 import MySwitch2 from "@/components/MySwitch2";
 
 function HistoryPage() {
-    let sensorType = "light-sensor";
-    // get value from select sensor
-    const [selectedSensor, setSelectedSensor] = useState(sensorType);
+    const [selectedSensor, setSelectedSensor] = useState<string>("Light-Sensor");
+    const [endDate, setEndDate] = useState<string>("8/1/2024");
+    const [startDate, setStartDate] = useState<string>("15/1/2024");
 
     return (
         <div>
             <div>
-                <HistoryByDayChart sensorType={selectedSensor} />
+                
+                <HistoryByDayChart 
+                    sensorType= {selectedSensor}
+                    endDate = {endDate}
+                    startDate = {startDate}
+                />
             </div>
 
             <div className="flex pt-11 justify-center mx-auto">

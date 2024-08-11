@@ -32,11 +32,13 @@ import {
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Switch } from "@/components/ui/switch";
 import { Sensor, ChartData } from "@/lib/definitions";
-
+import { toast } from "react-hot-toast";
+import axios from "axios";
 
 interface DataChartProps {
     sensor: Sensor;
     onDeviceStatusChange: (sensorType: string, status: boolean) => void;
+    dateTime: string;
 }
 
 const calculateAngle = (value: number, maxValue: number): number => {
@@ -45,13 +47,16 @@ const calculateAngle = (value: number, maxValue: number): number => {
 };
 
 const createChartConfig = (sensor: Sensor): ChartConfig => {
+
+    let new_color = getChartColor(sensor.value.currentValue, sensor.value.minValue, sensor.value.normalValue);
+
     const chartConfig = {
         value: {
             label: sensor.name,
         },
         safari: {
             label: "Safari",
-            color: "hsl(var(--chart-2))",
+            color: new_color,
         },
     };
 
@@ -69,34 +74,83 @@ const createChartData = (sensor: Sensor) : ChartData => {
     return chartData;
 }
 
+const getChartColor = (value: number, minimum: number, suitable: number): string => {
+  if (value < minimum) {
+    return '#FFA500'; // Orange color for values less than minimum
+  } else if (value >= minimum && value <= suitable) {
+    return 'hsl(var(--chart-2))'; // Green color (custom property) for values between minimum and suitable
+  } else {
+    return '#FF0000'; // Red color for values greater than suitable
+  }
+};
+
+const getSensorStatus = (value: number, minimum: number, suitable: number): string => {
+  if (value < minimum) {
+    return "LOW"
+  } else if (value >= minimum && value <= suitable) {
+    return "GOOD"
+  } else {
+    return "HIGH"
+  }
+}
+
 export function DataChart({
     sensor,
     onDeviceStatusChange,
+    dateTime,
 }: DataChartProps) {
     const topic = sensor.name;
     const [buttonStatus, setButtonStatus] = useState(false);
     const [status, setStatus] = useState("");
+
+    const send = async (type: string, message: string) => {
+        try {
+            console.log('Sending email...');
+          const response = await fetch('/api/sendMail', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              type: type,
+              receiver: "duyzhii@gmail.com",
+              receiver_name: "Duy",
+              user_message: message,
+            }),
+          });
+          
+          if (response.ok) {
+            console.log('Email sent successfully');
+          } else {
+            console.log('Failed to send email 1');
+            console.error('Error:', response.statusText);   
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      };
     
     const handlePublish = async (): Promise<void> => {
         try {
             const action = buttonStatus ? "OFF" : "ON";
-            const result: string = await publishMQTTMessage(
-                `${topic}_${action}`,
-                topic
-            );
+            // const result: string = await publishMQTTMessage(
+            //     `${topic}_${action}`,
+            //     topic
+            // );
             setButtonStatus(!buttonStatus);
-            setStatus(result);
+            // setStatus(result);
         } catch (error: unknown) {
-            if (error instanceof Error) {
-                setStatus("Error: " + error.message);
-            } else {
-                setStatus("An unknown error occurred");
-            }
+            // if (error instanceof Error) {
+            //     setStatus("Error: " + error.message);
+            // } else {
+            //     setStatus("An unknown error occurred");
+            // }
         }
         console.log(status);
     };
 
     const max_angle = calculateAngle(sensor.value.currentValue, sensor.value.maxValue);
+    const sensor_status = getSensorStatus(sensor.value.currentValue, sensor.value.minValue, sensor.value.normalValue);
 
     const [switchStatus, setSwitchStatus] = useState<boolean>(
         sensor.control_device.status
@@ -109,14 +163,25 @@ export function DataChart({
     const handleSwitchChange = (checked: boolean) => {
         setSwitchStatus(checked);
         onDeviceStatusChange(sensor.name, checked);
+
+        toast.success(
+          `The ${sensor.control_device.name} is now ${checked ? "ON" : "OFF"} 
+            at ${dateTime}`,
+          {
+            duration: 4000,
+            icon: checked ? <Power /> : <PowerOff />,
+          }
+        );
+
+        send("Alert_Device_Status", `The ${sensor.control_device.name} is now ${checked ? "ON" : "OFF"} at ${dateTime}`);
+        // console.log(`The ${sensor.control_device.name} is now ${checked ? "ON" : "OFF"} at ${dateTime}`);
     };
 
-    const dateTime = new Date().toLocaleTimeString() + " on " + new Date().toLocaleDateString();
 
     return (
-        <Card className="flex flex-col">
+        <Card className="flex flex-col border-2 rounded-2xl">
             <CardHeader className="items-center pb-0">
-                <CardTitle>{sensor.name}</CardTitle>
+                <CardTitle>{sensor.name} ({sensor.unit_symbol})</CardTitle>
                 <CardDescription>{dateTime}</CardDescription>
             </CardHeader>
             <CardContent className="flex-1 pb-0">
@@ -164,17 +229,17 @@ export function DataChart({
                                             >
                                                 <tspan
                                                     x={viewBox.cx}
-                                                    y={viewBox.cy}
+                                                    y={(viewBox.cy || 0) - 5}
                                                     className="fill-foreground text-4xl font-bold"
                                                 >
                                                     {sensor.value.currentValue.toLocaleString()}
                                                 </tspan>
                                                 <tspan
-                                                    x={viewBox.cx}
-                                                    y={(viewBox.cy || 0) + 24}
-                                                    className="fill-muted-foreground"
-                                                >
-                                                    {sensor.unit_symbol}
+                                                   x={(viewBox.cx || 0)}
+                                                   y={(viewBox.cy || 0) + 25}
+                                                   className="fill-muted-foreground text-lg"
+                                                 >
+                                                    {sensor_status}
                                                 </tspan>
                                             </text>
                                         );
@@ -187,15 +252,17 @@ export function DataChart({
             </CardContent>
 
             {sensor.control_device.name !== "" && (
-                    <div className="flex flex-col items-center gap-2 p-4 pb-7">
-                        <p className="p-2 pb-4 text-3xl font-semibold leading-none tracking-tight">
+                   <div className="flex flex-col items-center gap-2 pb-7">
+                    <p className="pb-4 text-3xl font-semibold leading-none tracking-tight">
                             {sensor.control_device.name}
                         </p>
                         <div className="flex items-center">
-                            {React.createElement(sensor.control_device.iconOn, { className: "mr-4 h-10 w-10" })}
+                            <div className = "mr-9">
+                                {React.createElement(sensor.control_device.iconOn, { className: "h-10 w-10" })}
+                            </div>
                             <Switch
                                 onClick={handlePublish}
-                                className="mx-6"
+                                className="mx-auto"
                                 switchSize="h-12 w-20"
                                 thumbSize="h-9 w-9"
                                 translateX={
@@ -206,13 +273,15 @@ export function DataChart({
                                 checked={switchStatus}
                                 onCheckedChange={handleSwitchChange}
                             />
-                            {React.createElement(sensor.control_device.iconOff, { className: "mr-4 h-10 w-10" })}
+                            <div className = "ml-9">
+                                {React.createElement(sensor.control_device.iconOff, { className: "h-10 w-10" })}
+                            </div>
                             </div>
                     </div>
                 )}
 
             <CardFooter className="flex-col gap-2 text-sm">
-                <div className="flex items-center gap-2 font-medium leading-none">
+                <div className="flex items-center gap-2 font-medium leading-none">      
                     {sensor.unit_name} should be less than {sensor.value.normalValue}{" "}
                     <TrendingUp className="h-4 w-4" />
                 </div>

@@ -12,6 +12,7 @@ import {
 export interface SelectSensorsProps {
     setSelectedSensor: (value: string) => void;
 }
+
 export function SelectSensors({ setSelectedSensor }: SelectSensorsProps) {
     return (
         <Select onValueChange={(e) => setSelectedSensor(e)}>
@@ -21,15 +22,18 @@ export function SelectSensors({ setSelectedSensor }: SelectSensorsProps) {
             <SelectContent>
                 <SelectGroup>
                     <SelectLabel>Sensors</SelectLabel>
-                    <SelectItem value="light-sensor">Light Sensor</SelectItem>
-                    <SelectItem value="soil-sensor">
+                    <SelectItem value="Light-Sensor">Light Sensor</SelectItem>
+                    <SelectItem value="Temperature-Sensor">
+                        Temperature Sensor
+                    </SelectItem>
+                    <SelectItem value= "Soil-Moisture-Sensor">
                         Soil Moisture Sensor
                     </SelectItem>
-                    <SelectItem value="air-quality-sensor">
-                        Air Quality Sensor
+                    <SelectItem value="Humidity-Sensor">
+                        Humidity Sensor
                     </SelectItem>
-                    <SelectItem value="temperature-sensor">
-                        Temperature Sensor
+                    <SelectItem value = "Air-Quality-Sensor">
+                        Air Quality Sensor
                     </SelectItem>
                 </SelectGroup>
             </SelectContent>
