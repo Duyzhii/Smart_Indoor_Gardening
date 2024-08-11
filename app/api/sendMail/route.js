@@ -1,5 +1,7 @@
 import nodemailer from 'nodemailer';
 import { NextResponse } from 'next/server';
+import fs from 'fs';
+import path from 'path';
 
 export async function POST(req) {
 
@@ -8,7 +10,7 @@ export async function POST(req) {
   try {
     const { type, receiver, receiver_name, user_message } = await req.json();
 
-    console.log('Request received:', { type, receiver, receiver_name, user_message });
+    console.log('Parsed request:', { type, receiver, receiver_name, user_message });
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -38,11 +40,26 @@ export async function POST(req) {
         throw new Error('Unknown alert type');
     }
 
+    console.log('Header and content:', { header, content });
+
+    const templatePath = path.join(process.cwd(), 'public', 'new-email.html');
+    const template = fs.readFileSync(templatePath, 'utf-8');
+    
+    console.log('Template before replacement:', template);
+
+    const replacedTemplate = template
+      .replace('{{header}}', header)
+      .replace('{{message}}', content)
+      .replace('{{user_name}}', receiver_name);
+
+    console.log('Template after replacement:', replacedTemplate);
+
     const mailOptions = {
       from: process.env.SMTP_EMAIL,
       to: receiver || process.env.SMTP_EMAIL, // Use provided receiver or fallback to default
       subject: header,
       text: content,
+      html: replacedTemplate,
     };
 
     const info = await transporter.sendMail(mailOptions);
