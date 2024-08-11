@@ -70,6 +70,7 @@ function DashboardPage() {
 
     return (
         <div className="space-y-6 w-4/5 mx-auto">
+            <h1 className="text-3xl font-bold">Dashboard</h1>
             <DataChart 
                 sensor={projectSensor[selectedSensor]} 
                 onDeviceStatusChange={handleDeviceStatusChange} 
@@ -79,6 +80,8 @@ function DashboardPage() {
                     onSelectSensor={setSelectedSensor}
                 />
             </div>
+            <h1 className="text-3xl font-bold pt-5">Progress Tracking</h1>
+            <Slider />
         </div>
     );
 }
