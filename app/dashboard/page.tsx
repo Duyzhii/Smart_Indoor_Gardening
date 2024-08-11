@@ -62,8 +62,8 @@ function DashboardPage() {
         fetchSensorData();  // Initial data fetch
         const interval = setInterval(fetchSensorData, 5000);  // Fetch data every 5 seconds
 
-    //     return () => clearInterval(interval);  // Clear interval on component unmount
-    // }, [currentTime]);
+        return () => clearInterval(interval);  // Clear interval on component unmount
+    }, [currentTime]);
 
     useEffect(() => {
         const updateTime = () => setCurrentTime(new Date().toLocaleTimeString());
