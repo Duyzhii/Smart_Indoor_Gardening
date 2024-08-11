@@ -5,9 +5,9 @@ import { buttonVariants } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { projectSensor } from "@/lib/data";
 import { Sensor } from "@/lib/definitions";
-import { Icon } from "next/dist/lib/metadata/types/metadata-types";
 
 interface DataBoxProps {
+    dynamicSensorData: Record<string, Sensor>;
     onSelectSensor: (sensorType: string) => void;
 }
 
@@ -15,9 +15,7 @@ const SensorCard: React.FC<{
     sensor: Sensor;
     onSelectSensor: (sensorType: string) => void;
 }> = ({ sensor, onSelectSensor}) => {
-
     const color = sensor.icon.color;
-
     return (
         <div
             key={sensor.name}
@@ -64,9 +62,9 @@ const SensorCard: React.FC<{
     );
 };
 
-const sensorWithoutControl = ["temperature", "humidity", "pir"];
+const sensorWithoutControl = ["temperature", "humidity", "PIR"];
 
-function DataBox({ onSelectSensor }: DataBoxProps) {
+function DataBox({ dynamicSensorData, onSelectSensor }: DataBoxProps) {
     const topLinks = Object.keys(projectSensor).filter((s) => !sensorWithoutControl.includes(s));
     const bottomLinks = Object.keys(projectSensor).filter((s) => sensorWithoutControl.includes(s));
 
@@ -76,7 +74,7 @@ function DataBox({ onSelectSensor }: DataBoxProps) {
                 {topLinks.map((s) => (
                     <SensorCard
                         key={s}
-                        sensor={projectSensor[s]}
+                        sensor={dynamicSensorData[s]}
                         onSelectSensor={onSelectSensor}
                     />
                 ))}
@@ -85,7 +83,7 @@ function DataBox({ onSelectSensor }: DataBoxProps) {
                 {bottomLinks.map((s) => (
                     <SensorCard
                         key={s}
-                        sensor={projectSensor[s]}
+                        sensor={dynamicSensorData[s]}
                         onSelectSensor={onSelectSensor}
                     />
                 ))}

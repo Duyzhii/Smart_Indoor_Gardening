@@ -4,12 +4,10 @@ import mqtt from "mqtt";
 
 let latestMessage = null;
 let client = null;
-let isConnecting = false;
+let isConnected = false;
 
 async function setupMQTTConnection() {
-    if (client || isConnecting) return;
-
-    isConnecting = true;
+    if (client || isConnected) return;
 
     const protocol = "mqtts";
     const host = "c512a2ba643244358704db37382f01d2.s1.eu.hivemq.cloud";
@@ -30,11 +28,11 @@ async function setupMQTTConnection() {
     });
 
     client.on("connect", () => {
-        // console.log("Connected to MQTT broker");
+        // console.log("Connected to MQTT server:", connectUrl);
         client.subscribe([topic], () => {
             // console.log(`Subscribe to topic '${topic}'`);
         });
-        isConnecting = false;
+        isConnected = true;
     });
 
     client.on("message", (topic, payload) => {
@@ -45,7 +43,7 @@ async function setupMQTTConnection() {
 
     client.on("error", (err) => {
         console.error("Connection error:", err);
-        isConnecting = false;
+        isConnected = false;
     });
 }
 

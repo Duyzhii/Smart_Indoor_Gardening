@@ -32,13 +32,20 @@ import {
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Switch } from "@/components/ui/switch";
 import { Sensor, ChartData } from "@/lib/definitions";
-import { toast } from "react-hot-toast";
-import axios from "axios";
+import toast from "react-hot-toast";
+import { sendMail } from "@/app/actions/sendMail";
+import { projectSensor } from "@/lib/data";
 
 interface DataChartProps {
     sensor: Sensor;
     onDeviceStatusChange: (sensorType: string, status: boolean) => void;
     dateTime: string;
+}
+
+const getSensorType = (name: string): string => {
+    return Object.keys(projectSensor).find(
+        (key) => projectSensor[key].name === name
+    ) as string;
 }
 
 const calculateAngle = (value: number, maxValue: number): number => {
@@ -98,38 +105,13 @@ export function DataChart({
     sensor,
     onDeviceStatusChange,
     dateTime,
-}: DataChartProps) {
-    const topic = sensor.name;
-    const [buttonStatus, setButtonStatus] = useState(false);
-    const [status, setStatus] = useState("");
+}: DataChartProps) {    
+    const [buttonStatus, setButtonStatus] = useState<boolean>(sensor.control_device.status);
 
-    const send = async (type: string, message: string) => {
-        try {
-            console.log('Sending email...');
-          const response = await fetch('/api/sendMail', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              type: type,
-              receiver: "duyzhii@gmail.com",
-              receiver_name: "Duy",
-              user_message: message,
-            }),
-          });
-          
-          if (response.ok) {
-            console.log('Email sent successfully');
-          } else {
-            console.log('Failed to send email 1');
-            console.error('Error:', response.statusText);   
-          }
-        } catch (error) {
-          console.error('Error:', error);
-        }
-      };
-    
+    useEffect(() => {   
+        setButtonStatus(sensor.control_device.status);
+    }, [sensor.control_device.status]);
+
     const handlePublish = async (): Promise<void> => {
         try {
             const action = buttonStatus ? "OFF" : "ON";
@@ -137,7 +119,6 @@ export function DataChart({
             //     `${topic}_${action}`,
             //     topic
             // );
-            setButtonStatus(!buttonStatus);
             // setStatus(result);
         } catch (error: unknown) {
             // if (error instanceof Error) {
@@ -146,23 +127,17 @@ export function DataChart({
             //     setStatus("An unknown error occurred");
             // }
         }
-        console.log(status);
     };
 
     const max_angle = calculateAngle(sensor.value.currentValue, sensor.value.maxValue);
     const sensor_status = getSensorStatus(sensor.value.currentValue, sensor.value.minValue, sensor.value.normalValue);
 
-    const [switchStatus, setSwitchStatus] = useState<boolean>(
-        sensor.control_device.status
-    );
-
-    useEffect(() => {
-        setSwitchStatus(!sensor.control_device.status);
-    }, [sensor.control_device.status]);
-
     const handleSwitchChange = (checked: boolean) => {
-        setSwitchStatus(checked);
-        onDeviceStatusChange(sensor.name, checked);
+        // get sensor object key
+        setButtonStatus(checked);
+        const sensorType = getSensorType(sensor.name);
+        onDeviceStatusChange(sensorType, checked);
+        handlePublish();
 
         toast.success(
           `The ${sensor.control_device.name} is now ${checked ? "ON" : "OFF"} 
@@ -173,7 +148,7 @@ export function DataChart({
           }
         );
 
-        send("Alert_Device_Status", `The ${sensor.control_device.name} is now ${checked ? "ON" : "OFF"} at ${dateTime}`);
+        // sendMail("Alert_Device_Status", `The ${sensor.control_device.name} is now ${checked ? "ON" : "OFF"} at ${dateTime}`);
         // console.log(`The ${sensor.control_device.name} is now ${checked ? "ON" : "OFF"} at ${dateTime}`);
     };
 
@@ -261,16 +236,15 @@ export function DataChart({
                                 {React.createElement(sensor.control_device.iconOn, { className: "h-10 w-10" })}
                             </div>
                             <Switch
-                                onClick={handlePublish}
                                 className="mx-auto"
                                 switchSize="h-12 w-20"
                                 thumbSize="h-9 w-9"
                                 translateX={
-                                    switchStatus
+                                    buttonStatus
                                         ? "translate-x-10"
                                         : "translate-x-0"
                                 }
-                                checked={switchStatus}
+                                checked={buttonStatus}
                                 onCheckedChange={handleSwitchChange}
                             />
                             <div className = "ml-9">

@@ -218,7 +218,7 @@ const projectSensor : Record<string, Sensor> = {
             iconOff: PowerOff
         },
     },
-    pir: {
+    PIR: {
         name: "PIR sensor",
         value: {
             currentValue: 0, // Initial value
