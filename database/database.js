@@ -74,5 +74,6 @@ export async function getSensorData() {
   }
   catch (error) {
     console.log("Error when getting data: ", error)
+    return [];
   }
 }

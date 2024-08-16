@@ -4,10 +4,12 @@ import DataBox from "@/components/DataBox";
 import DataChart from "@/components/DataChart";
 import { useEffect, useState } from "react";
 import Slider from "@/components/Slider";
-import { projectSensor } from "@/lib/data";
+import { plantData, projectSensor } from "@/lib/data";
 import { Sensor } from "@/lib/definitions";
 import { requestData } from "../actions/mqttActions";
 import { getSensorData, uploadHistoryData, uploadSensorData } from "@/database/database";
+import PlantCard from "@/components/PlantCard";
+import { Carousel, CarouselContent } from "@/components/ui/carousel";
 
 function DashboardPage() {
     const [selectedSensor, setSelectedSensor] = useState<string>("light");
@@ -72,6 +74,7 @@ function DashboardPage() {
                 // Upload the new sensor data to the database
                 await uploadSensorData(dataForUpload);
                 const historyData = await getSensorData();
+
                 console.log("History data: ", historyData);
 
             } catch (e) {
@@ -94,6 +97,17 @@ function DashboardPage() {
         return () => clearInterval(timeInterval);  // Clear interval on component unmount
     }, []);
 
+    const plants = plantData.map((plant, index) => (
+        <div className="carousel-item w-full" id={index.toString()} key={index}>
+            <PlantCard
+                key={index}
+                name={plant.name}
+                imageUrl={plant.image}
+                specifications={plant.specifications}
+            />
+        </div>
+    ));
+
     return (
         <div className="space-y-6 w-11/12 mx-auto">
             <h1 className="text-3xl font-bold">Dashboard</h1>
@@ -110,6 +124,33 @@ function DashboardPage() {
             </div>
             <h1 className="text-3xl font-bold">Progress Tracking</h1>
             <Slider />
+            <h1 className="text-3xl font-bold">Plant Showcase</h1> 
+            <div className="flex flex-col items-center justify-center h-full">
+                <div className="carousel w-full">{plants}</div>
+                <div className="flex w-full justify-center gap-2 py-2">
+                    {plantData.map((_, index) => (
+                        <a
+                            href={`#${index.toString()}`}
+                            key={index}
+                            className="btn btn-xs"
+                        >
+                            {index + 1}
+                        </a>
+                    ))}
+                </div>
+            </div>
+            <Carousel>
+                {plantData.map((plant, index) => (
+                    <CarouselContent key={index} id={index.toString()}>
+                        <PlantCard
+                            key={index}
+                            name={plant.name}
+                            imageUrl={plant.image}
+                            specifications={plant.specifications}
+                        />
+                    </CarouselContent>
+                ))}
+            </Carousel>
         </div>
     );
 }
