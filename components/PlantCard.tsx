@@ -20,7 +20,7 @@ interface PlantCardProps {
 const PlantCard: React.FC<PlantCardProps> = ({ name, imageUrl, specifications }) => {
   return (
     <div className="flex items-center justify-center h-full w-full">
-      <div className="card lg:card-side bg-white shadow-2xl">
+      <div className="card lg:card-side bg-white border-2 rounded-2xl">
         <figure>
           <div className="w-80 h-96 overflow-hidden">
             <img

@@ -28,7 +28,7 @@ const plantData = [
             { Icon: Droplet, title: 'Water', value: 'Average', color: '#3b82f6' },
             { Icon: Wheat, title: 'Harvest', value: '30-35 days', color: '#f97316' },
             { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
-            { Icon: Ruler, title: 'Height', value: '15cm - 60cm', color: '#14b8a6' },
+            { Icon: Ruler, title: 'Height', value: '15 - 60cm', color: '#14b8a6' },
         ]
     },
     {
@@ -52,7 +52,7 @@ const plantData = [
             { Icon: Droplet, title: 'Water', value: 'Average', color: '#3b82f6' },
             { Icon: Wheat, title: 'Harvest', value: '30-35 days', color: '#f97316' },
             { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
-            { Icon: Ruler, title: 'Height', value: '15cm - 60cm', color: '#14b8a6' },
+            { Icon: Ruler, title: 'Height', value: '15 - 60cm', color: '#14b8a6' },
         ]
     },
     {
@@ -76,7 +76,7 @@ const plantData = [
             { Icon: Droplet, title: 'Water', value: 'Average', color: '#3b82f6' },
             { Icon: Wheat, title: 'Harvest', value: '60-90 days', color: '#f97316' },
             { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
-            { Icon: Ruler, title: 'Height', value: '45cm - 60cm', color: '#14b8a6' },
+            { Icon: Ruler, title: 'Height', value: '45 - 60cm', color: '#14b8a6' },
         ]
     },
     {
@@ -88,7 +88,7 @@ const plantData = [
             { Icon: Droplet, title: 'Water', value: 'Average', color: '#3b82f6' },
             { Icon: Wheat, title: 'Harvest', value: '50-70 days', color: '#f97316' },
             { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
-            { Icon: Ruler, title: 'Height', value: '30cm - 60cm', color: '#14b8a6' },
+            { Icon: Ruler, title: 'Height', value: '30 - 60cm', color: '#14b8a6' },
         ]
     },
     {
@@ -100,7 +100,7 @@ const plantData = [
             { Icon: Droplet, title: 'Water', value: 'Average', color: '#3b82f6' },
             { Icon: Wheat, title: 'Harvest', value: '60-90 days', color: '#f97316' },
             { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
-            { Icon: Ruler, title: 'Height', value: '30cm - 60cm', color: '#14b8a6' },
+            { Icon: Ruler, title: 'Height', value: '30 - 60cm', color: '#14b8a6' },
         ]
     },
 ];
@@ -125,6 +125,7 @@ const projectSensor : Record<string, Sensor> = {
         last_time_updated: "2 minutes",
         control_device: {
             name: "Light Bulb",
+            description: "Light Bulb provides simulated natural light for plants to grow quickly",
             status: false,
             iconOn: Lightbulb,
             iconOff: LightbulbOff
@@ -147,6 +148,7 @@ const projectSensor : Record<string, Sensor> = {
         last_time_updated: "2 minutes",
         control_device: {
             name: "",
+            description: "No control device",
             status: false,
             iconOn: null,
             iconOff: null
@@ -169,6 +171,7 @@ const projectSensor : Record<string, Sensor> = {
         last_time_updated: "2 minutes",
         control_device: {
             name: "Water Pump",
+            description: "Water pump automatically turns on when the soil moisture is below the normal value",
             status: true,
             iconOn: Power,
             iconOff: PowerOff
@@ -191,6 +194,7 @@ const projectSensor : Record<string, Sensor> = {
         last_time_updated: "2 minutes",
         control_device: {
             name: "",
+            description: "No control device",
             status: false,
             iconOn: null,
             iconOff: null
@@ -213,12 +217,13 @@ const projectSensor : Record<string, Sensor> = {
         last_time_updated: "2 minutes",
         control_device: {
             name: "Fan",
+            description: "Fan helps to circulate the air in the closed environment",
             status: true,
             iconOn: Power,
             iconOff: PowerOff
         },
     },
-    pir: {
+    PIR: {
         name: "PIR sensor",
         value: {
             currentValue: 0, // Initial value
@@ -235,6 +240,7 @@ const projectSensor : Record<string, Sensor> = {
         last_time_updated: "2 minutes",
         control_device: {
             name: "",
+            description: "No control device",
             status: false,
             iconOn: null,
             iconOff: null

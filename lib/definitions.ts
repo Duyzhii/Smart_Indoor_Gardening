@@ -1,5 +1,6 @@
 export type ControlDevice = {
     name: string;
+    description: string;
     status: boolean;
     iconOn: any;
     iconOff: any;
@@ -36,4 +37,21 @@ export type DynamicSensorData = {
     last_time_updated: string;
     device_status?: string;
     chartData: ChartData;
+}
+
+export type SensorData = {
+    sensorType: string;
+    value: number;
+    controlDevice: string;
+    deviceStatus: boolean;
+    timeReport: string;
+}
+
+export type DataHistory = {
+    id: number;
+    sensorType: string;
+    value: number;
+    controlDevice: string;
+    deviceStatus: boolean;
+    timeReport: string;
 }

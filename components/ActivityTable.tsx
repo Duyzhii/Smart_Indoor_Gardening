@@ -1,3 +1,4 @@
+'use client';
 
 import {
     Table,
@@ -9,63 +10,255 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-const plants = [
-    { plant: "Apple", date: "29/8/2004", time: "12:30 pm", activity: "LED_ON", by: "Automatic" },
-    { plant: "Banana", date: "15/9/2004", time: "02:00 pm", activity: "WATERED", by: "Manual" },
-    { plant: "Cherry", date: "22/9/2004", time: "10:15 am", activity: "FERTILIZED", by: "Automatic" },
-    { plant: "Date", date: "05/10/2004", time: "03:30 pm", activity: "PRUNED", by: "Manual" },
-    { plant: "Fig", date: "12/10/2004", time: "01:00 pm", activity: "LED_ON", by: "Automatic" },
-    { plant: "Grape", date: "19/10/2004", time: "11:45 am", activity: "WATERED", by: "Manual" },
-    { plant: "Lemon", date: "26/10/2004", time: "09:30 am", activity: "FERTILIZED", by: "Automatic" },
-    { plant: "Mango", date: "02/11/2004", time: "04:00 pm", activity: "LED_ON", by: "Manual" },
-    { plant: "Nectarine", date: "09/11/2004", time: "08:00 am", activity: "WATERED", by: "Automatic" },
-    { plant: "Olive", date: "16/11/2004", time: "12:00 pm", activity: "PRUNED", by: "Manual" },
-    { plant: "Peach", date: "23/11/2004", time: "03:15 pm", activity: "FERTILIZED", by: "Automatic" },
-    { plant: "Pear", date: "30/11/2004", time: "10:00 am", activity: "LED_ON", by: "Manual" },
-    { plant: "Plum", date: "07/12/2004", time: "01:30 pm", activity: "WATERED", by: "Automatic" },
-    { plant: "Quince", date: "14/12/2004", time: "02:45 pm", activity: "FERTILIZED", by: "Manual" },
-    { plant: "Raspberry", date: "21/12/2004", time: "11:00 am", activity: "LED_ON", by: "Automatic" },
-    { plant: "Strawberry", date: "28/12/2004", time: "09:30 am", activity: "WATERED", by: "Manual" },
-    { plant: "Tomato", date: "04/01/2005", time: "10:15 am", activity: "PRUNED", by: "Automatic" },
-    { plant: "Uva", date: "11/01/2005", time: "03:00 pm", activity: "FERTILIZED", by: "Manual" },
-    { plant: "Violet", date: "18/01/2005", time: "12:30 pm", activity: "LED_ON", by: "Automatic" },
-    { plant: "Watermelon", date: "25/01/2005", time: "04:15 pm", activity: "WATERED", by: "Manual" },
-    { plant: "Xigua", date: "01/02/2005", time: "08:45 am", activity: "FERTILIZED", by: "Automatic" },
-    { plant: "Yellow Pepper", date: "08/02/2005", time: "02:00 pm", activity: "PRUNED", by: "Manual" },
-];
-
+import { DataHistory } from "@/lib/definitions"
+import { getSensorData } from "@/database/database"
+import { useEffect, useState } from "react"
+import { Button } from "@/components/ui/button"
 
 export function ActivityTable() {
+    const [historyData, setHistoryData] = useState<DataHistory[]>([])
+    const [currentPage, setCurrentPage] = useState(1)
+    const itemsPerPage = 7
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                let data = await getSensorData() as DataHistory[]
+                setHistoryData(data)
+            }
+            catch (error) {
+                console.error("Error fetching data: ", error)
+            }
+        }
+
+        fetchData();
+        const interval = setInterval(fetchData, 7000);
+
+        return () => clearInterval(interval)
+    }, [])
+
+    // Pagination logic
+    const indexOfLastItem = currentPage * itemsPerPage
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage
+    const currentData = historyData.slice(indexOfFirstItem, indexOfLastItem)
+
+    const totalPages = Math.ceil(historyData.length / itemsPerPage)
+
+    const handlePrevious = () => {
+        setCurrentPage(prevPage => Math.max(prevPage - 1, 1))
+    }
+
+    const handleNext = () => {
+        setCurrentPage(prevPage => Math.min(prevPage + 1, totalPages))
+    }
+
+    const handlePageClick = (pageNumber: number) => {
+        setCurrentPage(pageNumber)
+    }
+
+    const renderPagination = () => {
+        if (totalPages <= 6) {
+            // Simple pagination for up to 6 pages
+            return Array.from({ length: totalPages }, (_, i) => (
+                <Button
+                    key={i + 1}
+                    onClick={() => handlePageClick(i + 1)}
+                    className={`mx-2 ${currentPage === i + 1 ? 'bg-green-700 text-white' : ''}`}
+                    variant="secondary"
+                >
+                    {i + 1}
+                </Button>
+            ))
+        } else {
+            // Condensed pagination for more than 6 pages
+            const pages = []
+    
+            pages.push(
+                <Button
+                    key={1}
+                    onClick={() => handlePageClick(1)}
+                    className={`mx-2 ${currentPage === 1 ? 'bg-green-700 text-white' : ''}`}
+                    variant={"secondary"}
+                >
+                    1
+                </Button>
+            )
+            pages.push(
+                <Button
+                    key={2}
+                    onClick={() => handlePageClick(2)}
+                    className={`mx-2 ${currentPage === 2 ? 'bg-green-700 text-white' : ''}`}
+                    variant={"secondary"}   
+                >
+                    2
+                </Button>
+            )
+    
+            if (currentPage > 4) {
+                pages.push(<span key="start-ellipsis" className="mx-2">...</span>)
+            }
+    
+            if (currentPage > 3 && currentPage < totalPages - 2) {
+                pages.push(
+                    <Button
+                        key={currentPage - 1}
+                        onClick={() => handlePageClick(currentPage - 1)}
+                        className="mx-2"
+                        variant= "secondary"
+                    >
+                        {currentPage - 1}
+                    </Button>
+                )
+                pages.push(
+                    <Button
+                        key={currentPage}
+                        onClick={() => handlePageClick(currentPage)}
+                        className="mx-2 bg-green-700 text-white"
+                        variant= "secondary"
+                    >
+                        {currentPage}
+                    </Button>
+                )
+                pages.push(
+                    <Button
+                        key={currentPage + 1}
+                        onClick={() => handlePageClick(currentPage + 1)}
+                        className="mx-2"
+                        variant= "secondary"
+                    >
+                        {currentPage + 1}
+                    </Button>
+                )
+            } else if (currentPage <= 3) {
+                pages.push(
+                    <Button
+                        key={3}
+                        onClick={() => handlePageClick(3)}
+                        className={`mx-2 ${currentPage === 3 ? 'bg-green-700 text-white' : ''}`}
+                        variant={"secondary"}
+                    >
+                        3
+                    </Button>
+                )
+                pages.push(
+                    <Button
+                        key={4}
+                        onClick={() => handlePageClick(4)}
+                        className={`mx-2 ${currentPage === 4 ? 'bg-green-700 text-white' : ''}`}
+                        variant={"secondary"}
+                    >
+                        4
+                    </Button>
+                )
+            } else if (currentPage >= totalPages - 2) {
+                pages.push(
+                    <Button
+                        key={totalPages - 3}
+                        onClick={() => handlePageClick(totalPages - 3)}
+                        className={`mx-2 ${currentPage === totalPages - 3 ? 'bg-green-700 text-white' : ''}`}
+                        variant={"secondary"}
+                    >
+                        {totalPages - 3}
+                    </Button>
+                )
+                pages.push(
+                    <Button
+                        key={totalPages - 2}
+                        onClick={() => handlePageClick(totalPages - 2)}
+                        className={`mx-2 ${currentPage === totalPages - 2 ? 'bg-green-700 text-white' : ''}`}
+                        variant={"secondary"}
+    
+                    >
+                        {totalPages - 2}
+                    </Button>
+                )
+            }
+    
+            if (currentPage < totalPages - 3) {
+                pages.push(<span key="end-ellipsis" className="mx-2">...</span>)
+            }
+    
+            pages.push(
+                <Button
+                    key={totalPages - 1}
+                    onClick={() => handlePageClick(totalPages - 1)}
+                    className={`mx-2 ${currentPage === totalPages - 1 ? 'bg-green-700 text-white' : ''}`}
+                    variant={"secondary"}
+    
+                >
+                    {totalPages - 1}
+                </Button>
+            )
+            pages.push(
+                <Button
+                    key={totalPages}
+                    onClick={() => handlePageClick(totalPages)}
+                    className={`mx-2 ${currentPage === totalPages ? 'bg-green-700 text-white' : ''}`}
+                    variant={"secondary"}
+    
+                >
+                    {totalPages}
+                </Button>
+            )
+    
+            return pages
+        }
+    }
+    
+
     return (
-        <Table>
-            <TableCaption>A list of your recent plant activities.</TableCaption>
-            <TableHeader>
-                <TableRow>
-                    <TableHead className="w-[100px]">Plant</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Time</TableHead>
-                    <TableHead>Activity</TableHead>
-                    <TableHead>By</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {plants.map((plant) => (
-                    <TableRow key={plant.plant}>
-                        <TableCell className="font-medium">{plant.plant}</TableCell>
-                        <TableCell>{plant.date}</TableCell>
-                        <TableCell>{plant.time}</TableCell>
-                        <TableCell>{plant.activity}</TableCell>
-                        <TableCell>{plant.by}</TableCell>
+        <div>
+            {/* <Button className="mb-4" onClick={() => setCurrentPage(1)}>Refresh</Button> */}
+            <Table>
+                <TableCaption>A list of your recent plant activities.</TableCaption>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead className="w-[100px]">Sensor</TableHead>
+                        <TableHead>Value</TableHead>
+                        <TableHead>Control Device</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Time Report</TableHead>
                     </TableRow>
-                ))}
-            </TableBody>
-            <TableFooter>
-                <TableRow>
-                    <TableCell colSpan={4}>Total</TableCell>
-                    <TableCell className="text-right">{plants.length} Activities</TableCell>
-                </TableRow>
-            </TableFooter>
-        </Table>
+                </TableHeader>
+                <TableBody>
+                    {currentData.map((data, index) => (
+                        <TableRow key={data.id || `activity-${index}`}>
+                            <TableCell className="font-medium">{data.sensorType}</TableCell>
+                            <TableCell>{data.value}</TableCell>
+                            <TableCell>{data.controlDevice}</TableCell>
+                            <TableCell>{data.deviceStatus}</TableCell>
+                            <TableCell>{data.timeReport.toString()}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+                <TableFooter>
+                    <TableRow>
+                        <TableCell colSpan={4}>Total</TableCell>
+                        <TableCell className="text-right">{historyData.length} Activities</TableCell>
+                    </TableRow>
+                </TableFooter>
+            </Table>
+
+            {/* Pagination controls */}
+            <div className="flex justify-center mt-4">
+                <Button 
+                    onClick={handlePrevious} 
+                    disabled={currentPage === 1}
+                    className="mx-2"
+                    variant="secondary"
+                >
+                    Previous
+                </Button>
+                {renderPagination()}
+                <Button 
+                    onClick={handleNext} 
+                    disabled={currentPage === totalPages}
+                    className="mx-2"
+                    variant= "secondary"
+                >
+                    Next
+                </Button>
+            </div>
+        </div>
     )
 }
-
