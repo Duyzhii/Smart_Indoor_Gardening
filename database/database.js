@@ -41,7 +41,8 @@ export async function uploadHistoryData(dynamicSensorData) {
 
 export async function uploadSensorData(sensorDataArray) {
   try {
-    await sql `CREATE TABLE IF NOT EXISTS SENSOR_DATA (
+    await sql `
+      CREATE TABLE IF NOT EXISTS SENSOR_DATA (
       id SERIAL PRIMARY KEY,
       sensorType VARCHAR(255),
       value FLOAT,
@@ -68,9 +69,28 @@ export async function uploadSensorData(sensorDataArray) {
 
 export async function getSensorData() {
   try {
-    const sensorData = await sql `SELECT * FROM SENSOR_DATA;`;
+    const { rows } = await sql `SELECT * FROM SENSOR_DATA ORDER BY id DESC`;
     console.log("Data retrieved successfully");
-    return sensorData;
+
+    console.log("Rows: ", rows);
+
+    // convert rows to DataHistory objects 
+    const dataHistory = [];
+    for (const row of rows) {
+      const data = {
+        sensorType: row["sensortype"],
+        value: row["value"],
+        controlDevice: row["controldevice"],
+        deviceStatus: row["devicestatus"],
+        timeReport: row["timereport"]
+      };
+      
+      dataHistory.push(data);
+    }
+
+    console.log("Data: ", dataHistory);
+
+    return dataHistory;
   }
   catch (error) {
     console.log("Error when getting data: ", error)

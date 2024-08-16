@@ -11,7 +11,7 @@ function HistoryPage() {
     const [startDate, setStartDate] = useState<string>("15/1/2024");
 
     return (
-        <div>
+        <div className = "space-y-6 w-11/12 mx-auto">
             <div>
                 
                 <HistoryByDayChart 
@@ -23,9 +23,6 @@ function HistoryPage() {
 
             <div className="flex pt-11 justify-center mx-auto">
                 <SelectSensors setSelectedSensor={setSelectedSensor} />
-            </div>
-            <div>
-                <MySwitch2 />
             </div>
         </div>
     );

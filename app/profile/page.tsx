@@ -1,16 +1,10 @@
 import React from 'react'
-import { DropdownMenu } from '@radix-ui/react-dropdown-menu'
-import { DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { ActivityTable } from '@/components/ActivityTable'
+
+import Particles from "@/components/magicui/particles";
 
 function ProfilePage() {
   return (
-    <DropdownMenu>  
-        <DropdownMenuTrigger>
-            Your Activities
-        </DropdownMenuTrigger>
-    </DropdownMenu>
-
+    <Particles/>
   )
 }
 

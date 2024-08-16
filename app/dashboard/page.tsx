@@ -8,8 +8,7 @@ import { plantData, projectSensor } from "@/lib/data";
 import { Sensor } from "@/lib/definitions";
 import { requestData } from "../actions/mqttActions";
 import { getSensorData, uploadHistoryData, uploadSensorData } from "@/database/database";
-import PlantCard from "@/components/PlantCard";
-import { Carousel, CarouselContent } from "@/components/ui/carousel";
+import  GuideSlider  from "@/components/GuideSlider";
 
 function DashboardPage() {
     const [selectedSensor, setSelectedSensor] = useState<string>("light");
@@ -120,37 +119,15 @@ function DashboardPage() {
                 <DataBox
                     dynamicSensorData={dynamicSensorData}
                     onSelectSensor={setSelectedSensor}
+                    // selectedSensor={selectedSensor}
                 />
             </div>
             <h1 className="text-3xl font-bold">Progress Tracking</h1>
             <Slider />
-            <h1 className="text-3xl font-bold">Plant Showcase</h1> 
-            <div className="flex flex-col items-center justify-center h-full">
-                <div className="carousel w-full">{plants}</div>
-                <div className="flex w-full justify-center gap-2 py-2">
-                    {plantData.map((_, index) => (
-                        <a
-                            href={`#${index.toString()}`}
-                            key={index}
-                            className="btn btn-xs"
-                        >
-                            {index + 1}
-                        </a>
-                    ))}
-                </div>
-            </div>
-            <Carousel>
-                {plantData.map((plant, index) => (
-                    <CarouselContent key={index} id={index.toString()}>
-                        <PlantCard
-                            key={index}
-                            name={plant.name}
-                            imageUrl={plant.image}
-                            specifications={plant.specifications}
-                        />
-                    </CarouselContent>
-                ))}
-            </Carousel>
+
+            <h1 className="text-3xl font-bold">Guides</h1>
+            <GuideSlider />
+            
         </div>
     );
 }

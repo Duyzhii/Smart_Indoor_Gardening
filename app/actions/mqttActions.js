@@ -77,6 +77,6 @@ export async function requestData() {
             return;
         }
 
-        reject("No data available");
+        reject(latestMessage);
     });
 }
