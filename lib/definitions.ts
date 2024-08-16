@@ -45,3 +45,12 @@ export type SensorData = {
     deviceStatus: boolean;
     timeReport: string;
 }
+
+export type DataHistory = {
+    id: number;
+    sensorType: string;
+    value: number;
+    controlDevice: string;
+    deviceStatus: boolean;
+    timeReport: string;
+}

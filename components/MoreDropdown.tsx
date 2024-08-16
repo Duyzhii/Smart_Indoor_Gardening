@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,19 +9,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import {
-  Activity,
   ChevronLeft,
   Menu,
   Moon,
-  Settings,
   Sun,
+  SlidersHorizontal,
+  PersonStanding,
 } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Switch } from "./ui/switch";
-import Link from "next/link";
+import { toast } from "react-hot-toast";
 
 interface MoreDropdownProps {
   buttonClassName: string;
@@ -31,6 +30,8 @@ interface MoreDropdownProps {
 
 function MoreDropdown({ buttonClassName, iconClassName, buttonLabel }: MoreDropdownProps) {
   const [showModeToggle, setShowModeToggle] = useState(false);
+  const [showControlMode, setShowControlMode] = useState(false);
+  const [controlMode, setControlMode] = useState<"manual" | "automatic">("manual");
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const { theme, setTheme } = useTheme();
@@ -40,6 +41,7 @@ function MoreDropdown({ buttonClassName, iconClassName, buttonLabel }: MoreDropd
       if (!event.target) return;
       if (ref.current && !ref.current.contains(event.target as Node)) {
         setShowModeToggle(false);
+        setShowControlMode(false);
         setOpen(false);
       }
     }
@@ -50,6 +52,22 @@ function MoreDropdown({ buttonClassName, iconClassName, buttonLabel }: MoreDropd
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, [ref]);
+
+  const handleBackClick = () => {
+    if (showControlMode) {
+      setShowControlMode(false);
+    } else {
+      setShowModeToggle(false);
+    }
+  };
+
+  const handleControlModeChange = (checked: boolean) => {
+    setControlMode(checked ? "automatic" : "manual");
+
+    toast.success(
+      `Switched to ${checked ? "Automatic" : "Manual"} Control Mode`
+    );
+  };
 
   return (
     <DropdownMenu open={open}>
@@ -62,7 +80,7 @@ function MoreDropdown({ buttonClassName, iconClassName, buttonLabel }: MoreDropd
         >
           <Menu className={iconClassName} />
           <div className="hidden lg:block">{buttonLabel}</div>
-        </Button>        
+        </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
@@ -74,20 +92,16 @@ function MoreDropdown({ buttonClassName, iconClassName, buttonLabel }: MoreDropd
         align="end"
         alignOffset={-40}
       >
-        {!showModeToggle && (
+        {!showModeToggle && !showControlMode && (
           <>
-            <Link href="/settings">
-              <DropdownMenuItem className="menuItem">
-                <Settings size={20}/>
-                <p>Settings</p>
-              </DropdownMenuItem>
-            </Link>
-            <Link href="/activity">
-              <DropdownMenuItem className="menuItem" >
-                <Activity size={20} />
-                <p>Your activity</p>
-              </DropdownMenuItem>
-            </Link>
+            <DropdownMenuItem
+              className="menuItem"
+              onClick={() => setShowControlMode(true)}
+            >
+              <SlidersHorizontal size={20} />
+              <p>Control Mode</p>
+            </DropdownMenuItem>
+
             <DropdownMenuItem
               className="menuItem"
               onClick={() => setShowModeToggle(true)}
@@ -98,31 +112,54 @@ function MoreDropdown({ buttonClassName, iconClassName, buttonLabel }: MoreDropd
           </>
         )}
 
-        {showModeToggle && (
+        {(showModeToggle || showControlMode) && (
           <>
             <div className="flex items-center border-b border-gray-200 dark:border-neutral-700 py-3.5 px-2.5">
-              <ChevronLeft size={18} onClick={() => setShowModeToggle(false)} />
-              <p className="font-bold ml-1">Switch appearance</p>
-              {theme === "dark" ? (
+              <ChevronLeft size={18} className="mr-1" onClick={handleBackClick} />
+              <p className="font-bold ml-1">
+                {showControlMode ? "Change Control Mode" : "Switch appearance"}
+              </p>
+              {showControlMode ? (
+                <PersonStanding size={20} className="ml-auto" />
+              ) : theme === "dark" ? (
                 <Moon size={20} className="ml-auto" />
               ) : (
                 <Sun size={20} className="ml-auto" />
               )}
             </div>
 
-            <Label htmlFor="dark-mode" className="menuItem">
-              Dark Mode
-              <DropdownMenuItem className="ml-auto !p-0">
-                <Switch
-                  id="dark-mode"
-                  className="ml-auto"
-                  checked={theme === "dark"}
-                  onCheckedChange={(checked) => {
-                    setTheme(checked ? "dark" : "light");
-                  }}
-                />
-              </DropdownMenuItem>
-            </Label>
+            {!showControlMode && (
+              <Label htmlFor="dark-mode" className="menuItem">
+                Dark Mode
+                <DropdownMenuItem className="ml-auto !p-0">
+                  <Switch
+                    id="dark-mode"
+                    className="ml-auto"
+                    checked={theme === "dark"}
+                    onCheckedChange={(checked) => {
+                      setTheme(checked ? "dark" : "light");
+                      toast.success(
+                        `Switched to ${checked ? "Dark" : "Light"} Mode`
+                      );
+                    }}
+                  />
+                </DropdownMenuItem>
+              </Label>
+            )}
+
+            {showControlMode && (
+              <Label htmlFor="control-mode" className="menuItem">
+                {controlMode === "manual" ? "Manual Mode" : "Automatic Mode"}
+                <DropdownMenuItem className="ml-auto !p-0">
+                  <Switch
+                    id="control-mode"
+                    className="ml-auto"
+                    checked={controlMode === "automatic"}
+                    onCheckedChange={(checked) => handleControlModeChange(checked)}
+                  />
+                </DropdownMenuItem>
+              </Label>
+            )}
           </>
         )}
       </DropdownMenuContent>

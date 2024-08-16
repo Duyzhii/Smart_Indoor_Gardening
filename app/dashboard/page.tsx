@@ -8,6 +8,7 @@ import { projectSensor } from "@/lib/data";
 import { Sensor } from "@/lib/definitions";
 import { requestData } from "../actions/mqttActions";
 import { getSensorData, uploadHistoryData, uploadSensorData } from "@/database/database";
+import  GuideSlider  from "@/components/GuideSlider";
 
 function DashboardPage() {
     const [selectedSensor, setSelectedSensor] = useState<string>("light");
@@ -106,10 +107,15 @@ function DashboardPage() {
                 <DataBox
                     dynamicSensorData={dynamicSensorData}
                     onSelectSensor={setSelectedSensor}
+                    // selectedSensor={selectedSensor}
                 />
             </div>
             <h1 className="text-3xl font-bold">Progress Tracking</h1>
             <Slider />
+
+            <h1 className="text-3xl font-bold">Guides</h1>
+            <GuideSlider />
+            
         </div>
     );
 }

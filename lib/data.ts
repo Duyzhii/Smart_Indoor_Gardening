@@ -28,7 +28,7 @@ const plantData = [
             { Icon: Droplet, title: 'Water', value: 'Average', color: '#3b82f6' },
             { Icon: Wheat, title: 'Harvest', value: '30-35 days', color: '#f97316' },
             { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
-            { Icon: Ruler, title: 'Height', value: '15cm - 60cm', color: '#14b8a6' },
+            { Icon: Ruler, title: 'Height', value: '15 - 60cm', color: '#14b8a6' },
         ]
     },
     {
@@ -52,7 +52,7 @@ const plantData = [
             { Icon: Droplet, title: 'Water', value: 'Average', color: '#3b82f6' },
             { Icon: Wheat, title: 'Harvest', value: '30-35 days', color: '#f97316' },
             { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
-            { Icon: Ruler, title: 'Height', value: '15cm - 60cm', color: '#14b8a6' },
+            { Icon: Ruler, title: 'Height', value: '15 - 60cm', color: '#14b8a6' },
         ]
     },
     {
@@ -76,7 +76,7 @@ const plantData = [
             { Icon: Droplet, title: 'Water', value: 'Average', color: '#3b82f6' },
             { Icon: Wheat, title: 'Harvest', value: '60-90 days', color: '#f97316' },
             { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
-            { Icon: Ruler, title: 'Height', value: '45cm - 60cm', color: '#14b8a6' },
+            { Icon: Ruler, title: 'Height', value: '45 - 60cm', color: '#14b8a6' },
         ]
     },
     {
@@ -88,7 +88,7 @@ const plantData = [
             { Icon: Droplet, title: 'Water', value: 'Average', color: '#3b82f6' },
             { Icon: Wheat, title: 'Harvest', value: '50-70 days', color: '#f97316' },
             { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
-            { Icon: Ruler, title: 'Height', value: '30cm - 60cm', color: '#14b8a6' },
+            { Icon: Ruler, title: 'Height', value: '30 - 60cm', color: '#14b8a6' },
         ]
     },
     {
@@ -100,7 +100,7 @@ const plantData = [
             { Icon: Droplet, title: 'Water', value: 'Average', color: '#3b82f6' },
             { Icon: Wheat, title: 'Harvest', value: '60-90 days', color: '#f97316' },
             { Icon: ArrowDown01, title: 'Soil pH', value: 'Neutral', color: '#a855f7' },
-            { Icon: Ruler, title: 'Height', value: '30cm - 60cm', color: '#14b8a6' },
+            { Icon: Ruler, title: 'Height', value: '30 - 60cm', color: '#14b8a6' },
         ]
     },
 ];
