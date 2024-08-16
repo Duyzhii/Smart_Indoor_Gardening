@@ -1,8 +1,9 @@
 "use server";
 
 import mqtt from "mqtt";
+import { uploadHistoryData } from "@/database/database";
 
-let latestMessage = null;
+let latestMessage = {"light":0,"soil_moisture":0,"air_quality":0,"PIR":0,"humidity":0,"temperature":0};
 let client = null;
 let isConnected = false;
 
@@ -37,8 +38,9 @@ async function setupMQTTConnection() {
 
     client.on("message", (topic, payload) => {
         const message = payload.toString();
-        // console.log("Message received: ", message);
         latestMessage = message;
+
+        // upload to database
     });
 
     client.on("error", (err) => {
@@ -49,6 +51,8 @@ async function setupMQTTConnection() {
 
 export async function publishMQTTMessage(msg, topic) {
     await setupMQTTConnection();
+
+    console.log("Publishing message to topic:", topic, "with message", msg);
 
     return new Promise((resolve, reject) => {
         client.publish(topic, msg, { qos: 0, retain: false }, (error) => {

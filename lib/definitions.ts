@@ -1,5 +1,6 @@
 export type ControlDevice = {
     name: string;
+    description: string;
     status: boolean;
     iconOn: any;
     iconOff: any;

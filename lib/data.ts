@@ -125,6 +125,7 @@ const projectSensor : Record<string, Sensor> = {
         last_time_updated: "2 minutes",
         control_device: {
             name: "Light Bulb",
+            description: "Light Bulb provides simulated natural light for plants to grow quickly",
             status: false,
             iconOn: Lightbulb,
             iconOff: LightbulbOff
@@ -147,6 +148,7 @@ const projectSensor : Record<string, Sensor> = {
         last_time_updated: "2 minutes",
         control_device: {
             name: "",
+            description: "No control device",
             status: false,
             iconOn: null,
             iconOff: null
@@ -169,6 +171,7 @@ const projectSensor : Record<string, Sensor> = {
         last_time_updated: "2 minutes",
         control_device: {
             name: "Water Pump",
+            description: "Water pump automatically turns on when the soil moisture is below the normal value",
             status: true,
             iconOn: Power,
             iconOff: PowerOff
@@ -191,6 +194,7 @@ const projectSensor : Record<string, Sensor> = {
         last_time_updated: "2 minutes",
         control_device: {
             name: "",
+            description: "No control device",
             status: false,
             iconOn: null,
             iconOff: null
@@ -213,6 +217,7 @@ const projectSensor : Record<string, Sensor> = {
         last_time_updated: "2 minutes",
         control_device: {
             name: "Fan",
+            description: "Fan helps to circulate the air in the closed environment",
             status: true,
             iconOn: Power,
             iconOff: PowerOff
@@ -235,6 +240,7 @@ const projectSensor : Record<string, Sensor> = {
         last_time_updated: "2 minutes",
         control_device: {
             name: "",
+            description: "No control device",
             status: false,
             iconOn: null,
             iconOff: null
