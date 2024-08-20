@@ -40,7 +40,10 @@ async function setupMQTTConnection() {
         const message = payload.toString();
         latestMessage = message;
 
+        // get control devices data 
+
         // upload to database
+
     });
 
     client.on("error", (err) => {
