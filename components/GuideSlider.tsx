@@ -11,9 +11,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 
 import PlantCard from './PlantCard';
 import { plantData } from '@/lib/data';
-    
-function GuideSlider() {
 
+function GuideSlider() {
     return (
         <Carousel>
           <CarouselContent>
