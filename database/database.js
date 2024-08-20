@@ -70,9 +70,7 @@ export async function uploadSensorData(sensorDataArray) {
 export async function getSensorData() {
   try {
     const { rows } = await sql `SELECT * FROM SENSOR_DATA ORDER BY id DESC`;
-    console.log("Data retrieved successfully");
-
-    console.log("Rows: ", rows);
+    console.log(`Data received: ${rows.length} rows`);
 
     // convert rows to DataHistory objects 
     const dataHistory = [];
@@ -88,12 +86,10 @@ export async function getSensorData() {
       dataHistory.push(data);
     }
 
-    console.log("Data: ", dataHistory);
-
     return dataHistory;
   }
   catch (error) {
-    console.log("Error when getting data: ", error);
-    return null;
+    console.log("Error when getting data: ", error)
+    return [];
   }
 }

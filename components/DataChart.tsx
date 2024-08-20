@@ -1,8 +1,5 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { publishMQTTMessage } from "@/app/actions/mqttActions";
-
 import {
     TrendingUp,
     Power,
@@ -24,6 +21,9 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+
+import React, { useState, useEffect } from "react";
+import { publishMQTTMessage } from "@/app/actions/mqttActions";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Switch } from "@/components/ui/switch";
 import { Sensor, ChartData } from "@/lib/definitions";
@@ -34,7 +34,6 @@ import Particles from "@/components/magicui/particles";
 interface DataChartProps {
     sensor: Sensor;
     onDeviceStatusChange: (sensorType: string, status: boolean) => void;
-    dateTime: string;
 }
 
 const getSensorType = (name: string): string => {
@@ -97,20 +96,12 @@ const getSensorStatus = (value: number, minimum: number, suitable: number): stri
 export function DataChart({
     sensor,
     onDeviceStatusChange,
-    dateTime,
 }: DataChartProps) {
     const [buttonStatus, setButtonStatus] = useState<boolean>(sensor.control_device.status);
 
     useEffect(() => {
         setButtonStatus(sensor.control_device.status);
     }, [sensor.control_device.status]);
-
-    const handlePublish = async (): Promise<void> => {
-        try {
-            const action = buttonStatus ? "OFF" : "ON";
-        } catch (error: unknown) {
-        }
-    };
 
     const max_angle = calculateAngle(sensor.value.currentValue, sensor.value.maxValue);
     const sensor_status = getSensorStatus(sensor.value.currentValue, sensor.value.minValue, sensor.value.normalValue);
@@ -119,7 +110,13 @@ export function DataChart({
         setButtonStatus(checked);
         const sensorType = getSensorType(sensor.name);
         onDeviceStatusChange(sensorType, checked);
-        handlePublish();
+
+        // Publish MQTT message
+        console.log("Publishing MQTT message...");
+        publishMQTTMessage(checked ? "ON" : "OFF", sensor.control_device.name);
+
+        // get current time with format: 12:00:00 in Vietnam timezone
+        const dateTime = new Date().toLocaleString("en-US", {timeZone: "Asia/Ho_Chi_Minh"}).split(", ")[1];
 
         if (checked) {
             toast.success(
@@ -151,7 +148,7 @@ export function DataChart({
             />
             <CardHeader className="relative z-10 items-center pb-0">
                 <CardTitle>{sensor.name} ({sensor.unit_symbol})</CardTitle>
-                <CardDescription>{dateTime}</CardDescription>
+                <CardDescription>{sensor.control_device.description}</CardDescription>
             </CardHeader>
             <CardContent className="relative z-10 flex-1 pb-0">
                 <ChartContainer

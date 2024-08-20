@@ -7,17 +7,12 @@ import Slider from "@/components/Slider";
 import { projectSensor } from "@/lib/data";
 import { Sensor } from "@/lib/definitions";
 import { requestData } from "../actions/mqttActions";
-import { getSensorData, uploadHistoryData, uploadSensorData } from "@/database/database";
+import { uploadSensorData } from "@/database/database";
 import  GuideSlider  from "@/components/GuideSlider";
 
 function DashboardPage() {
     const [selectedSensor, setSelectedSensor] = useState<string>("light");
     const [dynamicSensorData, setDynamicSensorData] = useState<Record<string, Sensor>>(projectSensor);
-    const [currentTime, setCurrentTime] = useState<string>("");
-    const updateHistoryData = uploadHistoryData.bind(
-        null,
-        dynamicSensorData
-    );
 
     console.log("Rebuilding...");
 
@@ -48,21 +43,24 @@ function DashboardPage() {
                 const data = JSON.parse(response);  // Parse the JSON response
                 
                 let newSensorData: Record<string, Sensor> = {};
+
+                // get current time with format: 2021-10-10 12:00:00 in Vietnam timezone 
+                const currentTime = new Date().toLocaleString("en-US", {timeZone: "Asia/Ho_Chi_Minh"});
+                console.log("Current time: ", currentTime);
                 
                 setDynamicSensorData((prevData) => {
                     for (const [key, sensorValue] of Object.entries(data)) {
                         let sensor: Sensor = prevData[key] || { value: { currentValue: 0 } };  // Default to a new Sensor object if undefined
                         sensor.value.currentValue = sensorValue as number;  // Update sensor value
-                        sensor.last_time_updated = new Date().toISOString();  // Add timestamp
+                        sensor.last_time_updated = new Date().toLocaleString("en-US", {timeZone: "Asia/Ho_Chi_Minh"});
                         newSensorData[key] = sensor;  // Add updated sensor data to new state
                     }
                 
                     return newSensorData;
                 });
                 
-                console.log("New data: ", data);
-
-                const dataForUpload = Object.entries(newSensorData).map(([sensorType, sensor]) => ({
+                // Get the data to be uploaded to the database
+                const dataForUpload = Object.entries(newSensorData).map(([_, sensor]) => ({
                     sensorType: sensor.name,
                     value: sensor.value.currentValue,
                     controlDevice: sensor.control_device.name,
@@ -72,9 +70,6 @@ function DashboardPage() {
 
                 // Upload the new sensor data to the database
                 await uploadSensorData(dataForUpload);
-                const historyData = await getSensorData();
-                console.log("History data: ", historyData);
-
             } catch (e) {
                 console.error("Error parsing response: ", e);  // Handle cases where response is not valid JSON
             }
@@ -84,15 +79,6 @@ function DashboardPage() {
         const interval = setInterval(fetchSensorData, 5000);  // Fetch data every 5 seconds
 
         return () => clearInterval(interval);  // Clear interval on component unmount
-    }, [currentTime]);
-
-    useEffect(() => {
-        const updateTime = () => setCurrentTime(new Date().toLocaleTimeString());
-        updateTime();  // Set initial time
-        const updateDuration = 5 * 60 * 1000;  // Update time every 5 minutes
-        const timeInterval = setInterval(updateTime, updateDuration);  // Update time every second
-
-        return () => clearInterval(timeInterval);  // Clear interval on component unmount
     }, []);
 
     return (
@@ -101,7 +87,6 @@ function DashboardPage() {
             <DataChart 
                 sensor={dynamicSensorData[selectedSensor]} 
                 onDeviceStatusChange={handleDeviceStatusChange} 
-                dateTime={currentTime}  // Pass currentTime to DataChart
             />
             <div className="flex gap-4 w-full">
                 <DataBox
@@ -115,7 +100,7 @@ function DashboardPage() {
 
             <h1 className="text-3xl font-bold">Guides</h1>
             <GuideSlider />
-            
+
         </div>
     );
 }
