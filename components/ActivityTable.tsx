@@ -19,6 +19,7 @@ export function ActivityTable() {
     const [historyData, setHistoryData] = useState<DataHistory[]>([])
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 7
+    const [pageInput, setPageInput] = useState("");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -54,6 +55,17 @@ export function ActivityTable() {
 
     const handlePageClick = (pageNumber: number) => {
         setCurrentPage(pageNumber)
+    }
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setPageInput(event.target.value)
+    }
+
+    const handleInputBlurOrEnter = () => {
+        const pageNumber = Math.max(1, Math.min(totalPages, parseInt(pageInput)))
+        if (!isNaN(pageNumber)) {
+            setCurrentPage(pageNumber)
+        }
     }
 
     const renderPagination = () => {
@@ -95,7 +107,18 @@ export function ActivityTable() {
             )
     
             if (currentPage > 4) {
-                pages.push(<span key="start-ellipsis" className="mx-2">...</span>)
+                pages.push(
+                    <input
+                        key="start-input"
+                        type="number"
+                        value={pageInput}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlurOrEnter}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleInputBlurOrEnter() }}
+                        className="mx-2 border rounded text-center w-12"
+                        placeholder="..."
+                    />
+                )
             }
     
             if (currentPage > 3 && currentPage < totalPages - 2) {
@@ -104,7 +127,7 @@ export function ActivityTable() {
                         key={currentPage - 1}
                         onClick={() => handlePageClick(currentPage - 1)}
                         className="mx-2"
-                        variant= "secondary"
+                        variant="secondary"
                     >
                         {currentPage - 1}
                     </Button>
@@ -114,7 +137,7 @@ export function ActivityTable() {
                         key={currentPage}
                         onClick={() => handlePageClick(currentPage)}
                         className="mx-2 bg-green-700 text-white"
-                        variant= "secondary"
+                        variant="secondary"
                     >
                         {currentPage}
                     </Button>
@@ -124,7 +147,7 @@ export function ActivityTable() {
                         key={currentPage + 1}
                         onClick={() => handlePageClick(currentPage + 1)}
                         className="mx-2"
-                        variant= "secondary"
+                        variant="secondary"
                     >
                         {currentPage + 1}
                     </Button>
@@ -135,7 +158,7 @@ export function ActivityTable() {
                         key={3}
                         onClick={() => handlePageClick(3)}
                         className={`mx-2 ${currentPage === 3 ? 'bg-green-700 text-white' : ''}`}
-                        variant={"secondary"}
+                        variant="secondary"
                     >
                         3
                     </Button>
@@ -145,7 +168,7 @@ export function ActivityTable() {
                         key={4}
                         onClick={() => handlePageClick(4)}
                         className={`mx-2 ${currentPage === 4 ? 'bg-green-700 text-white' : ''}`}
-                        variant={"secondary"}
+                        variant="secondary"
                     >
                         4
                     </Button>
@@ -156,7 +179,7 @@ export function ActivityTable() {
                         key={totalPages - 3}
                         onClick={() => handlePageClick(totalPages - 3)}
                         className={`mx-2 ${currentPage === totalPages - 3 ? 'bg-green-700 text-white' : ''}`}
-                        variant={"secondary"}
+                        variant="secondary"
                     >
                         {totalPages - 3}
                     </Button>
@@ -166,8 +189,7 @@ export function ActivityTable() {
                         key={totalPages - 2}
                         onClick={() => handlePageClick(totalPages - 2)}
                         className={`mx-2 ${currentPage === totalPages - 2 ? 'bg-green-700 text-white' : ''}`}
-                        variant={"secondary"}
-    
+                        variant="secondary"
                     >
                         {totalPages - 2}
                     </Button>
@@ -175,7 +197,18 @@ export function ActivityTable() {
             }
     
             if (currentPage < totalPages - 3) {
-                pages.push(<span key="end-ellipsis" className="mx-2">...</span>)
+                pages.push(
+                    <input
+                        key="end-input"
+                        type="number"
+                        value={pageInput}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlurOrEnter}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleInputBlurOrEnter() }}
+                        className="mx-2 border rounded text-center w-12"
+                        placeholder="..."
+                    />
+                )
             }
     
             pages.push(
@@ -183,8 +216,7 @@ export function ActivityTable() {
                     key={totalPages - 1}
                     onClick={() => handlePageClick(totalPages - 1)}
                     className={`mx-2 ${currentPage === totalPages - 1 ? 'bg-green-700 text-white' : ''}`}
-                    variant={"secondary"}
-    
+                    variant="secondary"
                 >
                     {totalPages - 1}
                 </Button>
@@ -194,8 +226,7 @@ export function ActivityTable() {
                     key={totalPages}
                     onClick={() => handlePageClick(totalPages)}
                     className={`mx-2 ${currentPage === totalPages ? 'bg-green-700 text-white' : ''}`}
-                    variant={"secondary"}
-    
+                    variant="secondary"
                 >
                     {totalPages}
                 </Button>
@@ -204,7 +235,6 @@ export function ActivityTable() {
             return pages
         }
     }
-    
 
     return (
         <div>

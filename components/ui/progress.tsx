@@ -8,21 +8,20 @@ import { cn } from "@/lib/utils"
 const getStatusColor = (status: string) => {
   switch (status) {
     case "Seed":
-      return "bg-green-500" // Màu cho giai đoạn Seed
+      return "bg-green-500" 
     case "Sprout":
-      return "bg-yellow-500" // Màu cho giai đoạn Sprout
+      return "bg-yellow-500" 
     case "Sapling":
-      return "bg-orange-500" // Màu cho giai đoạn Sapling
+      return "bg-orange-500" 
     case "Mature":
-      return "bg-blue-500" // Màu cho giai đoạn Mature
+      return "bg-blue-500"
     case "Harvest":
-      return "bg-red-500" // Màu cho giai đoạn Harvest
+      return "bg-red-500"
     default:
-      return "bg-gray-500" // Màu mặc định nếu status không khớp
+      return "bg-gray-500" 
   }
 }
 
-// Định nghĩa kiểu cho thành phần Progress bao gồm thuộc tính status
 interface ProgressProps extends React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> {
   value: number;
   status: string;
@@ -32,7 +31,7 @@ const Progress = React.forwardRef<
   React.ElementRef<typeof ProgressPrimitive.Root>,
   ProgressProps
 >(({ className, value, status, ...props }, ref) => {
-  const statusColor = getStatusColor(status);
+  const statusColor = getStatusColor(status); 
 
   return (
     <ProgressPrimitive.Root

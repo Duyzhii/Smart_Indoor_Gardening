@@ -118,23 +118,33 @@ export function DataChart({
         // get current time with format: 12:00:00 in Vietnam timezone
         const dateTime = new Date().toLocaleString("en-US", {timeZone: "Asia/Ho_Chi_Minh"}).split(", ")[1];
 
-        toast.success(
-            `The ${sensor.control_device.name} is now ${checked ? "ON" : "OFF"} 
-            at ${dateTime}`,
-            {
-                duration: 4000,
-                icon: checked ? <Power /> : <PowerOff />,
-            }
-        );
+        if (checked) {
+            toast.success(
+                `The ${sensor.control_device.name} is now ${checked ? "ON" : "OFF"} 
+                at ${dateTime}`,
+                {
+                    duration: 5000,
+                }
+            );
+       }
+       else {
+            toast.error(
+                `The ${sensor.control_device.name} is now ${checked ? "ON" : "OFF"} 
+                at ${dateTime}`,
+                {
+                    duration: 5000,
+                }
+            );
+       }
     };
 
     return (
         <Card className="relative flex flex-col border-2 rounded-2xl">
             <Particles
                 className="absolute inset-0 pointer-events-none z-0"
-                quantity={200}
+                quantity={300}
                 size = {0.7}
-                staticity= {100}
+                staticity= {50}
             />
             <CardHeader className="relative z-10 items-center pb-0">
                 <CardTitle>{sensor.name} ({sensor.unit_symbol})</CardTitle>

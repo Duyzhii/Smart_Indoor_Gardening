@@ -82,7 +82,7 @@ function DashboardPage() {
     }, []);
 
     return (
-        <div className="space-y-6 w-11/12 mx-auto">
+        <div className="space-y-6 w-11/12 mx-auto mb-10">
             <h1 className="text-3xl font-bold">Dashboard</h1>
             <DataChart 
                 sensor={dynamicSensorData[selectedSensor]} 
@@ -92,7 +92,7 @@ function DashboardPage() {
                 <DataBox
                     dynamicSensorData={dynamicSensorData}
                     onSelectSensor={setSelectedSensor}
-                    // selectedSensor={selectedSensor}
+                    selectedSensor = {selectedSensor}
                 />
             </div>
             <h1 className="text-3xl font-bold">Progress Tracking</h1>

@@ -112,9 +112,9 @@ const projectSensor : Record<string, Sensor> = {
         name: "Light sensor",
         value:{
             currentValue: 150, // Initial value
-            normalValue: 200, // Normal value
-            maxValue: 1000, // Max value
-            minValue: 100, // Min value
+            normalValue: 700, // Normal value
+            maxValue: 1023, // Max value
+            minValue: 300, // Min value
         },
         unit_name: "Light intensity",
         unit_symbol: "lux",
@@ -137,7 +137,7 @@ const projectSensor : Record<string, Sensor> = {
             currentValue: 25, // Initial value
             normalValue: 30, // Normal value
             maxValue: 50, // Max value
-            minValue: 10, // Min value
+            minValue: 15, // Min value
         },
         unit_name: "Temperature",
         unit_symbol: "°C",
@@ -157,10 +157,10 @@ const projectSensor : Record<string, Sensor> = {
     soil_moisture: {
         name: "Soil moisture sensor",
         value: {
-            currentValue: 50, // Initial value
-            normalValue: 70, // Normal value
-            maxValue: 100, // Max value
-            minValue: 60, // Min value
+            currentValue: 500, // Initial value
+            normalValue: 700, // Normal value
+            maxValue: 1023, // Max value
+            minValue: 300, // Min value
         },
         unit_name: "Soil moisture",
         unit_symbol: "%",
@@ -180,10 +180,10 @@ const projectSensor : Record<string, Sensor> = {
     humidity: {
         name: "Humidity sensor",
         value: {
-            currentValue: 60, // Initial value
+            currentValue: 50, // Initial value
             normalValue: 70, // Normal value
             maxValue: 100, // Max value
-            minValue: 40, // Min value
+            minValue: 30, // Min value
         },
         unit_name: "Humidity",
         unit_symbol: "%",
@@ -203,10 +203,10 @@ const projectSensor : Record<string, Sensor> = {
     air_quality: {
         name: "Air quality sensor",
         value: {
-            currentValue: 75, // Initial value
-            normalValue: 80, // Normal value
-            maxValue: 100, // Max value
-            minValue: 60, // Min value
+            currentValue: 700, // Initial value
+            normalValue: 800, // Normal value
+            maxValue: 1500, // Max value
+            minValue: 0, // Min value
         },
         unit_name: "Air quality",
         unit_symbol: "ppm",

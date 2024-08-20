@@ -5,18 +5,23 @@ import { buttonVariants } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { projectSensor } from "@/lib/data";
 import { Sensor } from "@/lib/definitions";
+import ShineBorder from "./magicui/shine-border";
 
 interface DataBoxProps {
     dynamicSensorData: Record<string, Sensor>;
     onSelectSensor: (sensorType: string) => void;
+    selectedSensor: string;
 }
 
 const SensorCard: React.FC<{
     sensor: Sensor;
     onSelectSensor: (sensorType: string) => void;
-}> = ({ sensor, onSelectSensor}) => {
+    isSelected: boolean; // thêm prop này
+}> = ({ sensor, onSelectSensor, isSelected }) => { // nhận prop isSelected
     const color = sensor.icon.color;
-    return (
+    
+    // Chỉ bao bọc bằng ShineBorder khi sensor được chọn
+    const content = (
         <div
             key={sensor.name}
             onClick={() => {
@@ -31,7 +36,11 @@ const SensorCard: React.FC<{
                     variant: "databox",
                     size: "lg",
                 }),
-                `!h-48 bg-${sensor.icon.color}-100 flex flex-col justify-center items-center p-4 rounded-2xl border-2`
+                `!h-48 bg-${sensor.icon.color}-100 flex flex-col justify-center items-center p-4`,
+                {
+                    "border-2 rounded-2xl": !isSelected,
+                    "border-none": isSelected,
+                }
             )}
         >
             <div className="text-center justify-center leading-tight">
@@ -44,7 +53,7 @@ const SensorCard: React.FC<{
                     {sensor.name}
                 </p>
                 <p className="text-xl mb-1">
-                  <span className="font-extrabold text-2xl">{sensor.value.currentValue}</span> <span className="text-base">{sensor.unit_symbol}</span>
+                    <span className="font-extrabold text-2xl">{sensor.value.currentValue}</span> <span className="text-base">{sensor.unit_symbol}</span>
                 </p>
                 {sensor.control_device.name && (
                     <div
@@ -60,11 +69,28 @@ const SensorCard: React.FC<{
             </div>
         </div>
     );
+
+    return isSelected ? (
+        // <div className = "!h48 flex flex-col justify-center items-center p-4">
+            <ShineBorder
+                borderRadius={16}
+                borderWidth={3}
+                duration={14}
+                color={color}
+                className="w-full !h-48 flex flex-col justify-center items-center p-4"
+            >
+                {content}
+            </ShineBorder>
+        // </div>
+    ) : (
+        content
+    );
 };
+
 
 const sensorWithoutControl = ["temperature", "humidity", "PIR"];
 
-function DataBox({ dynamicSensorData, onSelectSensor }: DataBoxProps) {
+function DataBox({ dynamicSensorData, onSelectSensor, selectedSensor }: DataBoxProps & { selectedSensor: string }) {
     const topLinks = Object.keys(projectSensor).filter((s) => !sensorWithoutControl.includes(s));
     const bottomLinks = Object.keys(projectSensor).filter((s) => sensorWithoutControl.includes(s));
 
@@ -76,6 +102,7 @@ function DataBox({ dynamicSensorData, onSelectSensor }: DataBoxProps) {
                         key={s}
                         sensor={dynamicSensorData[s]}
                         onSelectSensor={onSelectSensor}
+                        isSelected={s === selectedSensor} 
                     />
                 ))}
             </div>
@@ -85,6 +112,7 @@ function DataBox({ dynamicSensorData, onSelectSensor }: DataBoxProps) {
                         key={s}
                         sensor={dynamicSensorData[s]}
                         onSelectSensor={onSelectSensor}
+                        isSelected={s === selectedSensor}
                     />
                 ))}
             </div>

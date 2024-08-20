@@ -1,4 +1,4 @@
-// components/PlantCard.tsx
+"use client";
 
 import React from "react";
 import { LucideIcon } from "lucide-react";
@@ -20,12 +20,12 @@ interface PlantCardProps {
 const PlantCard: React.FC<PlantCardProps> = ({ name, imageUrl, specifications }) => {
   return (
     <div className="flex items-center justify-center h-full w-full">
-      <div className="card lg:card-side bg-white border-2 rounded-2xl">
+      <div className="card lg:card-side rounded-2xl border-2">
         <figure>
-          <div className="w-80 h-96 overflow-hidden">
+          <div className="w-full lg:w-80 h-64 lg:h-96 overflow-hidden">
             <img
               src={imageUrl}
-              alt="Album"
+              alt={name}
               className="rounded-lg object-cover w-full h-full"
             />
           </div>
