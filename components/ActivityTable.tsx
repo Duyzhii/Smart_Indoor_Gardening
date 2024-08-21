@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from "react";
 import {
     Table,
     TableBody,
@@ -10,12 +11,45 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { DataHistory } from "@/lib/definitions"
 import { getSensorData } from "@/database/database"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 
-export function ActivityTable() {
+export interface SelectTableProps {
+    setTable: (value: string) => void;
+}
+
+export function SelectTable({ setTable }: SelectTableProps) {
+    return (
+        <Select onValueChange={(e) => setTable(e)}>
+            <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select a table" />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectGroup>
+                    <SelectLabel>Tables</SelectLabel>
+                    <SelectItem value="Sensor">Sensor</SelectItem>
+                    <SelectItem value="Control Device">Control Device</SelectItem>
+                </SelectGroup>
+            </SelectContent>
+        </Select>
+    )
+}
+interface ActivityTableProps {
+    tableType: string;
+}
+
+export function ActivityTable( {tableType}: ActivityTableProps) {
     const [historyData, setHistoryData] = useState<DataHistory[]>([])
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 7
@@ -44,6 +78,7 @@ export function ActivityTable() {
     const currentData = historyData.slice(indexOfFirstItem, indexOfLastItem)
 
     const totalPages = Math.ceil(historyData.length / itemsPerPage)
+
 
     const handlePrevious = () => {
         setCurrentPage(prevPage => Math.max(prevPage - 1, 1))
@@ -236,59 +271,113 @@ export function ActivityTable() {
         }
     }
 
-    return (
-        <div>
-            {/* <Button className="mb-4" onClick={() => setCurrentPage(1)}>Refresh</Button> */}
-            <Table>
-                <TableCaption>A list of your recent plant activities.</TableCaption>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead className="w-[100px]">Sensor</TableHead>
-                        <TableHead>Value</TableHead>
-                        <TableHead>Control Device</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Time Report</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {currentData.map((data, index) => (
-                        <TableRow key={data.id || `activity-${index}`}>
-                            <TableCell className="font-medium">{data.sensorType}</TableCell>
-                            <TableCell>{data.value}</TableCell>
-                            <TableCell>{data.controlDevice}</TableCell>
-                            <TableCell>{data.deviceStatus}</TableCell>
-                            <TableCell>{data.timeReport.toString()}</TableCell>
+    if(tableType === "Sensor") {
+        return (
+            <div>
+                {/* <Button className="mb-4" onClick={() => setCurrentPage(1)}>Refresh</Button> */}
+                <Table>
+                    <TableCaption>A list of your recent plant activities.</TableCaption>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[300px]">Sensor</TableHead>
+                            <TableHead className = "w-[200px]">Value</TableHead>
+                            <TableHead>Time Report</TableHead>
                         </TableRow>
-                    ))}
-                </TableBody>
-                <TableFooter>
-                    <TableRow>
-                        <TableCell colSpan={4}>Total</TableCell>
-                        <TableCell className="text-right">{historyData.length} Activities</TableCell>
-                    </TableRow>
-                </TableFooter>
-            </Table>
+                    </TableHeader>
+                    <TableBody>
+                        {currentData.map((data, index) => (
+                            <TableRow key={data.id || `activity-${index}`}>
+                                <TableCell className="font-medium">{data.sensorType}</TableCell>
+                                <TableCell className="mx-auto">{data.value}</TableCell>
+                                <TableCell>{data.timeReport.toString()}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                    <TableFooter>
+                        <TableRow>
+                            <TableCell colSpan={4}>Total</TableCell>
+                            <TableCell className="text-right">{historyData.length} Activities</TableCell>
+                        </TableRow>
+                    </TableFooter>
+                </Table>
 
-            {/* Pagination controls */}
-            <div className="flex justify-center mt-4">
-                <Button 
-                    onClick={handlePrevious} 
-                    disabled={currentPage === 1}
-                    className="mx-2"
-                    variant="secondary"
-                >
-                    Previous
-                </Button>
-                {renderPagination()}
-                <Button 
-                    onClick={handleNext} 
-                    disabled={currentPage === totalPages}
-                    className="mx-2"
-                    variant= "secondary"
-                >
-                    Next
-                </Button>
+                {/* Pagination controls */}
+                <div className="flex justify-center mt-4">
+                    <Button 
+                        onClick={handlePrevious} 
+                        disabled={currentPage === 1}
+                        className="mx-2"
+                        variant="secondary"
+                    >
+                        Previous
+                    </Button>
+                    {renderPagination()}
+                    <Button 
+                        onClick={handleNext} 
+                        disabled={currentPage === totalPages}
+                        className="mx-2"
+                        variant= "secondary"
+                    >
+                        Next
+                    </Button>
+                </div>
             </div>
-        </div>
-    )
+        )
+    }
+
+
+    else if (tableType  === "Control Device") {
+        return (
+            <div>
+                {/* <Button className="mb-4" onClick={() => setCurrentPage(1)}>Refresh</Button> */}
+                <Table>
+                    <TableCaption>A list of your recent plant activities.</TableCaption>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[300px]">Control Device</TableHead>
+                            <TableHead className = "w-[200px]">Status</TableHead>
+                            <TableHead>Time Report</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {currentData.map((data, index) => (
+                            <TableRow key={data.id || `activity-${index}`}>
+                                <TableCell className="font-medium">{data.controlDevice}</TableCell>
+                                <TableCell>{data.deviceStatus}</TableCell>
+                                <TableCell>{data.timeReport.toString()}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                    <TableFooter>
+                        <TableRow>
+                            <TableCell colSpan={4}>Total</TableCell>
+                            <TableCell className="text-right">{historyData.length} Activities</TableCell>
+                        </TableRow>
+                    </TableFooter>
+                </Table>
+
+                {/* Pagination controls */}
+                <div className="flex justify-center mt-4">
+                    <Button 
+                        onClick={handlePrevious} 
+                        disabled={currentPage === 1}
+                        className="mx-2"
+                        variant="secondary"
+                    >
+                        Previous
+                    </Button>
+                    {renderPagination()}
+                    <Button 
+                        onClick={handleNext} 
+                        disabled={currentPage === totalPages}
+                        className="mx-2"
+                        variant= "secondary"
+                    >
+                        Next
+                    </Button>
+                </div>
+            </div>
+        )
+
+    }
 }
