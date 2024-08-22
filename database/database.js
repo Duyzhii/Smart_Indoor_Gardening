@@ -1,15 +1,13 @@
 'use server';
 
 import { sql } from '@vercel/postgres';
- 
-export async function initTable() {
+
+export async function initSensorTable() {
   try {
-    await sql `CREATE TABLE IF NOT EXISTS SENSOR_DATA (
+    await sql `CREATE TABLE IF NOT EXISTS SENSOR (
                 id SERIAL PRIMARY KEY,
-                sensorType VARCHAR(255), 
+                sensorType VARCHAR(255),
                 value FLOAT,
-                controlDevice VARCHAR(255),
-                deviceStatus BIT,
                 timeReport TIMESTAMP
               );`;
     
@@ -20,46 +18,34 @@ export async function initTable() {
   }
 }
 
-export async function uploadHistoryData(dynamicSensorData) {
+export async function initControlDeviceTable() {
   try {
-    for (sensorData of dynamicSensorData) {
-      const sensorType = sensorData.name;
-      const value = sensorData.value.currentValue;
-      const controlDevice = sensorData.controlDevice.name;
-      const deviceStatus = sensorData.controlDevice.status;
-      const timeReport = sensorData.last_time_updated;
-
-      await sql `INSERT INTO SENSOR_DATA (sensorType, value, controlDevice, deviceStatus, timeReport) VALUES (${sensorType}, ${value}, ${controlDevice}, ${deviceStatus}, ${timeReport});`;
-    }
+    await sql `CREATE TABLE IF NOT EXISTS CONTROL_DEVICE (
+                id SERIAL PRIMARY KEY,
+                deviceType VARCHAR(255),
+                status INT,
+                timeReport TIMESTAMP
+              );`;
     
-    console.log("Data uploaded successfully");
+    console.log("Table created successfully");
   }
   catch (error) {
-    console.log("Error when uploading data: ", error)
+    console.log("Error when creating table: ", error)
   }
 }
 
 export async function uploadSensorData(sensorDataArray) {
   try {
-    await sql `
-      CREATE TABLE IF NOT EXISTS SENSOR_DATA (
-      id SERIAL PRIMARY KEY,
-      sensorType VARCHAR(255),
-      value FLOAT,
-      controlDevice VARCHAR(255),
-      deviceStatus VARCHAR(5),
-      timeReport TIMESTAMP
-    );`;
-
     for (const sensorData of sensorDataArray) {
-      const { sensorType, value, controlDevice, deviceStatus, timeReport } = sensorData;
+      const { sensorType, value, timeStamp } = sensorData;
       
       await sql`
-        INSERT INTO SENSOR_DATA (sensorType, value, controlDevice, deviceStatus, timeReport) 
-        VALUES (${sensorType}, ${value}, ${controlDevice}, ${deviceStatus}, ${timeReport})`;
+        INSERT INTO SENSOR (sensortype, value, timereport)
+        VALUES (${sensorType}, ${value}, ${timeStamp})
+      `;
     }
     
-    console.log("Data uploaded successfully");
+    console.log("Sensor data uploaded successfully");
   }
   catch (error) {
     console.error("Error when uploading data: ", error);
@@ -69,17 +55,61 @@ export async function uploadSensorData(sensorDataArray) {
 
 export async function getSensorData() {
   try {
-    const { rows } = await sql `SELECT * FROM SENSOR_DATA ORDER BY id DESC`;
-    console.log(`Data received: ${rows.length} rows`);
+    const { rows } = await sql `SELECT * FROM SENSOR ORDER BY id DESC`;
 
     // convert rows to DataHistory objects 
     const dataHistory = [];
     for (const row of rows) {
       const data = {
+        id: row["id"],
         sensorType: row["sensortype"],
         value: row["value"],
-        controlDevice: row["controldevice"],
-        deviceStatus: row["devicestatus"],
+        timeReport: row["timereport"]
+      };
+      
+      dataHistory.push(data);
+    }
+
+    return dataHistory;
+  }
+  catch (error) {
+    console.log("Error when getting SS data: ", error)
+    return [];
+  }
+}
+
+export async function uploadControlDeviceData(controlDeviceData) {
+  try {
+    for (const controlDevice of controlDeviceData) {
+      const deviceType = controlDevice.deviceType.name;
+      const status = controlDevice.status;
+      const timeStamp = controlDevice.timeStamp;
+      
+      await sql`
+        INSERT INTO CONTROL_DEVICE (devicetype, status, timereport)
+        VALUES (${deviceType}, ${status}, ${timeStamp})
+      `;
+    }
+
+    console.log("Control device data uploaded successfully");
+  }
+  catch (error) {
+    console.error("Error when uploading data: ", error);
+    throw error;  // Re-throw the error so it can be caught and handled in the client
+  }
+}
+
+export async function getControlDeviceData() {
+  try {
+    const { rows } = await sql `SELECT * FROM CONTROL_DEVICE ORDER BY id DESC`;
+
+    // convert rows to DataHistory objects 
+    const dataHistory = [];
+    for (const row of rows) {
+      const data = {
+        id: row["id"],
+        deviceType: row["devicetype"],
+        status: row["status"],
         timeReport: row["timereport"]
       };
       

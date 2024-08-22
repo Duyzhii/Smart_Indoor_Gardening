@@ -20,10 +20,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { DataHistory } from "@/lib/definitions"
-import { getSensorData } from "@/database/database"
+import { getControlDeviceData, getSensorData } from "@/database/database"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
+import { SensorData, ControlDeviceData } from "@/lib/definitions";
 
 export interface SelectTableProps {
     setTable: (value: string) => void;
@@ -50,7 +50,8 @@ interface ActivityTableProps {
 }
 
 export function ActivityTable( {tableType}: ActivityTableProps) {
-    const [historyData, setHistoryData] = useState<DataHistory[]>([])
+    const [sensorData, setSensorData] = useState<SensorData[]>([])
+    const [controlDeviceData, setControlDeviceData] = useState<ControlDeviceData[]>([])
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 7
     const [pageInput, setPageInput] = useState("");
@@ -58,8 +59,11 @@ export function ActivityTable( {tableType}: ActivityTableProps) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                let data = await getSensorData() as DataHistory[]
-                setHistoryData(data)
+                let sensorData = await getSensorData()
+                let controlDeviceData = await getControlDeviceData()
+
+                setSensorData(sensorData)
+                setControlDeviceData(controlDeviceData)
             }
             catch (error) {
                 console.error("Error fetching data: ", error)
@@ -75,9 +79,8 @@ export function ActivityTable( {tableType}: ActivityTableProps) {
     // Pagination logic
     const indexOfLastItem = currentPage * itemsPerPage
     const indexOfFirstItem = indexOfLastItem - itemsPerPage
-    const currentData = historyData.slice(indexOfFirstItem, indexOfLastItem)
-
-    const totalPages = Math.ceil(historyData.length / itemsPerPage)
+    const currentData = tableType ==  "Sensor" ? sensorData.slice(indexOfFirstItem, indexOfLastItem) : controlDeviceData.slice(indexOfFirstItem, indexOfLastItem)
+    const totalPages = Math.ceil((tableType == "Sensor" ? sensorData.length : controlDeviceData.length) / itemsPerPage)
 
 
     const handlePrevious = () => {
@@ -286,6 +289,7 @@ export function ActivityTable( {tableType}: ActivityTableProps) {
                     </TableHeader>
                     <TableBody>
                         {currentData.map((data, index) => (
+                            data = data as SensorData,
                             <TableRow key={data.id || `activity-${index}`}>
                                 <TableCell className="font-medium">{data.sensorType}</TableCell>
                                 <TableCell className="mx-auto">{data.value}</TableCell>
@@ -296,7 +300,7 @@ export function ActivityTable( {tableType}: ActivityTableProps) {
                     <TableFooter>
                         <TableRow>
                             <TableCell colSpan={4}>Total</TableCell>
-                            <TableCell className="text-right">{historyData.length} Activities</TableCell>
+                            <TableCell className="text-right">{sensorData.length} Activities</TableCell>
                         </TableRow>
                     </TableFooter>
                 </Table>
@@ -341,9 +345,10 @@ export function ActivityTable( {tableType}: ActivityTableProps) {
                     </TableHeader>
                     <TableBody>
                         {currentData.map((data, index) => (
+                            data = data as ControlDeviceData,
                             <TableRow key={data.id || `activity-${index}`}>
-                                <TableCell className="font-medium">{data.controlDevice}</TableCell>
-                                <TableCell>{data.deviceStatus}</TableCell>
+                                <TableCell className="font-medium">{data.deviceType}</TableCell>
+                                <TableCell>{data.status}</TableCell>
                                 <TableCell>{data.timeReport.toString()}</TableCell>
                             </TableRow>
                         ))}
@@ -351,7 +356,7 @@ export function ActivityTable( {tableType}: ActivityTableProps) {
                     <TableFooter>
                         <TableRow>
                             <TableCell colSpan={4}>Total</TableCell>
-                            <TableCell className="text-right">{historyData.length} Activities</TableCell>
+                            <TableCell className="text-right">{controlDeviceData.length} Activities</TableCell>
                         </TableRow>
                     </TableFooter>
                 </Table>

@@ -40,18 +40,20 @@ export type DynamicSensorData = {
 }
 
 export type SensorData = {
-    sensorType: string;
-    value: number;
-    controlDevice: string;
-    deviceStatus: boolean;
-    timeReport: string;
-}
-
-export type DataHistory = {
     id: number;
     sensorType: string;
     value: number;
-    controlDevice: string;
-    deviceStatus: boolean;
     timeReport: string;
+}
+
+export type ControlDeviceData = {
+    id: number;
+    deviceType: string;
+    status: boolean;
+    timeReport: string;
+}
+
+export type SensorControl = {
+    name: string;
+    sensor: string;
 }

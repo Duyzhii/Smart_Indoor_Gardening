@@ -1,8 +1,12 @@
 -- create table for sensor data
-CREATE TABLE SENSOR_DATA (
+CREATE TABLE SENSOR (
   sensorType VARCHAR(255) PRIMARY KEY,
   value FLOAT,
-  controlDevice VARCHAR(255),
-  deviceStatus BIT,
+  timeReport TIMESTAMP
+);
+
+CREATE TABLE CONTROL_DEVICE (
+  deviceType VARCHAR(255) PRIMARY KEY,
+  status INT,
   timeReport TIMESTAMP
 );

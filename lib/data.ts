@@ -15,7 +15,7 @@ import {
     PowerOff,
 } 
 from "lucide-react";
-import { Sensor } from "./definitions";
+import { Sensor, SensorControl } from "./definitions";
 
 // Plant Specifications Data
 const plantData = [
@@ -106,6 +106,20 @@ const plantData = [
 ];
 
 const sensorName = ["light", "temperature", "soil_moisture", "humidity", "air_quality", "pir"];
+const controlDeviceName : Record<string, SensorControl> = {
+    Led: {
+        name: "Light Bulb",
+        sensor: "light",
+    },
+    Fan: {
+        name: "Fan",
+        sensor: "air_quality",
+    },
+    Pump: {
+        name: "Water Pump",
+        sensor: "soil_moisture",
+    },
+};
 
 const projectSensor : Record<string, Sensor> = {
     light: {
@@ -249,4 +263,4 @@ const projectSensor : Record<string, Sensor> = {
 };
 
 
-export { plantData, projectSensor };
+export { plantData, projectSensor, controlDeviceName };

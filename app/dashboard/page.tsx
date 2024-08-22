@@ -6,70 +6,92 @@ import { useEffect, useState } from "react";
 import Slider from "@/components/Slider";
 import { projectSensor } from "@/lib/data";
 import { Sensor } from "@/lib/definitions";
-import { requestData } from "../actions/mqttActions";
-import { uploadSensorData } from "@/database/database";
+import { requestSensorData, requestControlDeviceData } from "../actions/mqttActions";
+import { uploadControlDeviceData } from "@/database/database";
 import  GuideSlider  from "@/components/GuideSlider";
+import { ControlDeviceData } from "@/lib/definitions";
+import { controlDeviceName } from "@/lib/data";
+import { toast } from "react-hot-toast";
 
 function DashboardPage() {
     const [selectedSensor, setSelectedSensor] = useState<string>("light");
     const [dynamicSensorData, setDynamicSensorData] = useState<Record<string, Sensor>>(projectSensor);
-
+    const [controlMode, setControlMode] = useState<string>("manual");
     console.log("Rebuilding...");
 
     const handleDeviceStatusChange = (sensorType: string, newStatus: boolean) => {
-        setDynamicSensorData((prevData) => {
-            const newsensorStatus = {
-                ...prevData,
-                [sensorType]: {
-                    ...prevData[sensorType],
-                    control_device: {
-                        ...prevData[sensorType].control_device,
-                        status: newStatus,
-                    },  
-                },
-            };
-
-            console.log("New sensor data: ", newsensorStatus);
-
-            return newsensorStatus;
+        // Only allow changes in manual mode
+        if (controlMode == "manual") {
+            setDynamicSensorData((prevData) => {
+                const newsensorStatus = {
+                    ...prevData,
+                    [sensorType]: {
+                        ...prevData[sensorType],
+                        control_device: {
+                            ...prevData[sensorType].control_device,
+                            status: newStatus,
+                        },  
+                    },
+                };
+    
+                console.log("New sensor data: ", newsensorStatus);
+    
+                // Upload new control device status to database
+                const controlDeviceData : ControlDeviceData[] = [{
+                    id: 1,
+                    deviceType: sensorType,
+                    status: newStatus,
+                    timeReport: new Date().toLocaleString("en-US", {timeZone: "Asia/Ho_Chi_Minh"}),
+                }]
+                uploadControlDeviceData(controlDeviceData);
+    
+                return newsensorStatus;
+            })
         }
-    )};
-   
+        else {
+            // Create toast message
+            toast.error("You cannot control the device while using the Automatic Mode");
+            toast.error("Device status cannot be changed in automatic mode");
+        }
+    };
+
     useEffect(() => {
         const fetchSensorData = async () => {
             try {
                 console.log("Fetching sensor data...");
-                const response = await requestData();  // Fetch data from server
-                const data = JSON.parse(response);  // Parse the JSON response
+                const sensorResponse = await requestSensorData();  // Fetch sensor data from server
+                const controlDeviceResponse = await requestControlDeviceData();  // Fetch control device data from server
+
+                console.log("Sensor response: ", sensorResponse);
+                console.log("Control Device response: ", controlDeviceResponse);
                 
-                let newSensorData: Record<string, Sensor> = {};
+                const sensorData = JSON.parse(sensorResponse);  // Parse the JSON response
+                const controlDeviceData = JSON.parse(controlDeviceResponse);  // Parse the JSON response
+                
+                let newDynamicData: Record<string, Sensor> = {};
 
                 // get current time with format: 2021-10-10 12:00:00 in Vietnam timezone 
                 const currentTime = new Date().toLocaleString("en-US", {timeZone: "Asia/Ho_Chi_Minh"});
                 console.log("Current time: ", currentTime);
                 
                 setDynamicSensorData((prevData) => {
-                    for (const [key, sensorValue] of Object.entries(data)) {
+                    for (const [key, sensorValue] of Object.entries(sensorData)) {
                         let sensor: Sensor = prevData[key] || { value: { currentValue: 0 } };  // Default to a new Sensor object if undefined
                         sensor.value.currentValue = sensorValue as number;  // Update sensor value
                         sensor.last_time_updated = new Date().toLocaleString("en-US", {timeZone: "Asia/Ho_Chi_Minh"});
-                        newSensorData[key] = sensor;  // Add updated sensor data to new state
+
+                        // get the sensor key of control device
+                        for (const [cd_key, controlDeviceValue] of Object.entries(controlDeviceData)) {
+                            if (controlDeviceName[cd_key].sensor == key) {
+                                sensor.control_device.status = controlDeviceValue as boolean;
+                            }
+                        }
+                        
+                        newDynamicData[key] = sensor;  // Add updated sensor data to new state
                     }
                 
-                    return newSensorData;
+                    return newDynamicData;
                 });
-                
-                // Get the data to be uploaded to the database
-                const dataForUpload = Object.entries(newSensorData).map(([_, sensor]) => ({
-                    sensorType: sensor.name,
-                    value: sensor.value.currentValue,
-                    controlDevice: sensor.control_device.name,
-                    deviceStatus: sensor.control_device.status ? "ON" : "OFF",
-                    timeReport: sensor.last_time_updated
-                }));
-
-                // Upload the new sensor data to the database
-                await uploadSensorData(dataForUpload);
             } catch (e) {
                 console.error("Error parsing response: ", e);  // Handle cases where response is not valid JSON
             }

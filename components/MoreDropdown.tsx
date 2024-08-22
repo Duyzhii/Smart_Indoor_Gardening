@@ -21,6 +21,7 @@ import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Switch } from "./ui/switch";
 import { toast } from "react-hot-toast";
+// import { useControlMode } from "@/app/context/ControlModeContext";
 
 interface MoreDropdownProps {
   buttonClassName: string;
@@ -31,10 +32,12 @@ interface MoreDropdownProps {
 function MoreDropdown({ buttonClassName, iconClassName, buttonLabel }: MoreDropdownProps) {
   const [showModeToggle, setShowModeToggle] = useState(false);
   const [showControlMode, setShowControlMode] = useState(false);
-  const [controlMode, setControlMode] = useState<"manual" | "automatic">("manual");
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const { theme, setTheme } = useTheme();
+  const [controlMode, setControlMode] = useState<string>("manual");
+  // const { controlMode, setControlMode } = useControlMode();
+  
 
   useEffect(() => {
     function handleOutsideClick(event: MouseEvent) {
@@ -62,11 +65,19 @@ function MoreDropdown({ buttonClassName, iconClassName, buttonLabel }: MoreDropd
   };
 
   const handleControlModeChange = (checked: boolean) => {
-    setControlMode(checked ? "automatic" : "manual");
+    const newMode = checked ? "automatic" : "manual";
+    setControlMode(newMode);
 
-    toast.success(
-      `Switched to ${checked ? "Automatic" : "Manual"} Control Mode`
-    );
+    if (newMode == "automatic") {
+      toast.success(
+        `Switched to Automatic Control Mode`
+      );
+    }
+    else {
+      toast.error(
+        `Switched to Manual Control Mode`
+      );
+    }
   };
 
   return (
