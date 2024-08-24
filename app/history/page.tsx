@@ -17,25 +17,18 @@ function formatDate(date: DateValue): string {
 
 function HistoryPage() {
     const [selectedSensor, setSelectedSensor] = useState<string>("Light sensor");
-    const [startDate, setStartDate] = useState<DateValue>(parseDate("2024-04-01"));
-    const [endDate, setEndDate] = useState<DateValue>(parseDate("2024-04-08"));
-
-    console.log("Start date: ", formatDate(startDate));
-    console.log("End date: ", formatDate(endDate));
+    const [startDate, setStartDate] = useState<string>("08/18/2024")
+    const [endDate, setEndDate] = useState<string>("08/24/2024")
 
     return (
         <div className="w-full h-full">
             <h1 className="text-3xl font-bold">History Data Chart</h1>
             <div className="space-y-6 w-11/12 mx-auto pt-4">
-                <PickDate 
-                    setStartDate={setStartDate} 
-                    setEndDate={setEndDate} 
-                />
                 <div>
                     <HistoryByDayChart 
                         sensorType={selectedSensor}
-                        startDate={formatDate(startDate)}
-                        endDate={formatDate(endDate)}
+                        startDate={startDate}
+                        endDate={endDate}
                     />
                 </div>
 
