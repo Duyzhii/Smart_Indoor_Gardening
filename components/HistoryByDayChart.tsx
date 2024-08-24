@@ -20,6 +20,12 @@ import {
 import { getSensorValueByDate } from "@/database/database";
 import { use, useEffect, useState } from "react";
 
+//Date Picker
+// import {DatePicker, DateRangePicker} from "@nextui-org/react";
+// import {DateValue, parseDate, getLocalTimeZone, CalendarDate, today} from "@internationalized/date";
+// import {useDateFormatter} from "@react-aria/i18n";
+// import { useState } from "react";
+
 interface SensorData {
     day: string;
     data: number;
@@ -38,6 +44,52 @@ interface HistoryByDayChartProps {
     startDate: string;
     endDate: string;
 }
+
+// export default function PickDate() {
+//     const [to, setTo] = useState<DateValue>(parseDate("2024-04-04"));
+//     const [from, setFrom] = useState<DateValue>(parseDate("2024-04-04"));
+
+//     let formatter = useDateFormatter({dateStyle: "full"});
+  
+//     return (
+//       <div className="flex flex-row gap-4">
+//         <div className="w-full flex flex-col">
+//           <DatePicker 
+//             className="max-w-[284px] justify-center align-middle border-2 rounded-2xl" 
+//             label="From"
+//             value={from} 
+//             onChange={setFrom}
+//             defaultValue={today(getLocalTimeZone()).subtract({ days: 1 })} 
+//             maxValue={to}
+//             isInvalid = {from > to}
+//             errorMessage = "From date must be before To date"
+//             variant = "faded"
+//             isRequired
+            
+//         />
+//         </div>
+//         <DatePicker 
+//             className="max-w-[300px] border-2 rounded-2xl"
+//             label="To" 
+//             value = {to} 
+//             onChange={setTo}
+//             maxValue = {today(getLocalTimeZone())}            
+//             defaultValue={today(getLocalTimeZone()).add({ days: 1 })}
+//             isInvalid = {to < from || to > today(getLocalTimeZone())}
+//             errorMessage ={(to < from) ? "To date must be after From date" : "To date must be before today"}
+//             isRequired
+//             calendarProps={{
+//                 classNames: {
+//                     base: "bg-background border-2 rounded-2xl",
+
+//                 }
+//             }}
+//          />
+//       </div>      
+//     );
+
+// }
+  
 
 export function HistoryByDayChart({ sensorType, startDate, endDate }: HistoryByDayChartProps) {
     const [sensorData, setSensorData] = useState<SensorData[]>([]);
@@ -72,10 +124,11 @@ export function HistoryByDayChart({ sensorType, startDate, endDate }: HistoryByD
     return (
         <Card>
             <CardHeader>
-                <CardTitle className="mx-auto pb-2">
+                <CardTitle className="mx-auto pb-5 ">
                     {sensorType.replace(/-/g, " ")}
                 </CardTitle>
-                <CardDescription className = "mx-auto">
+                <CardDescription className = "w-3/5 mx-auto">
+                    {/* <PickDate /> */}
                     {startDate} - {endDate}
                 </CardDescription>
             </CardHeader>
