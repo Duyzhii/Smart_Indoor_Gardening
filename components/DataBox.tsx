@@ -57,7 +57,7 @@ const SensorCard: React.FC<{
                 </p>
                 {sensor.control_device.name && (
                     <div
-                        className={`mt-2  rounded-2xl p-1 ${
+                        className={`inline-block mt-2 rounded-2xl p-2 px-3 ${
                             sensor.control_device.status ? "bg-green-500" : "bg-red-500"
                         }`}
                     >

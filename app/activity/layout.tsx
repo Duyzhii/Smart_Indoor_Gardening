@@ -6,7 +6,7 @@ export default function GuideLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className = "flex h-screen relative flex-col md:flex-row md:overflow-hidden">
+    <div className = "flex md:h-screen relative flex-col md:flex-row md:overflow-hidden">
         <div className = "w-20 flex-none lg:w-72 md:border-r">
             <SideNav />
         </div>        
