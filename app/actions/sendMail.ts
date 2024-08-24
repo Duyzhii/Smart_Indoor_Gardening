@@ -19,7 +19,7 @@ export async function sendMail(type: string, message: string) {
     if (response.ok) {
       console.log("Email sent successfully");
     } else {
-      console.error("Failed to send email");
+      console.error("Failed to send email", await response.text());
     }
   } catch (error) {
     console.error("Error:", error);
@@ -28,26 +28,33 @@ export async function sendMail(type: string, message: string) {
 
 export async function sendWarning(sensorType: string) {
     let type = "";
-      let message = "";
-        const suitable = projectSensor[sensorType].value.normalValue;
-        const minimum = projectSensor[sensorType].value.minValue;
-        const device = projectSensor[sensorType].control_device.name;
-        const value = projectSensor[sensorType].value.currentValue;
-  
-      if (value > suitable) {
-        type = "Alert_Over_Suitable_Value";
-        message = `The ${sensorType} value is over the suitable value (${value} > ${suitable}) \n
-        Please turn off the ${device} to avoid damage.
-        `;
-        sendMail (type, message);
-      }
-  
-      else if (value < minimum) {
-        type = "Alert_Under_Suitable_Value";
-        message = `The ${sensorType} value is under the minimum value (${value} < ${minimum}) \n
-        Please turn on the ${device} to avoid damage.
-        `;
-        sendMail (type, message);
-      }
+    let message = "";
+      const suitable = projectSensor[sensorType].value.normalValue;
+      const minimum = projectSensor[sensorType].value.minValue;
+      const device = projectSensor[sensorType].control_device.name;
+      const value = projectSensor[sensorType].value.currentValue;
+    
+    if (sensorType === "PIR") {
+      type = "Alert_Bug";
+      message = `The ${sensorType} value is ${value} \n
+      Please check the ${device} to avoid damage.
+      `;
+      // sendMail (type, message);
+    }
+
+    else if (value > suitable) {
+      type = "Alert_Over_Suitable_Value";
+      message = `The ${sensorType} value is over the suitable value (${value} > ${suitable}) \n
+      Please turn off the ${device} to avoid damage.
+      `;
+      sendMail (type, message);
+    }
+    else if (value < minimum) {
+      type = "Alert_Under_Suitable_Value";
+      message = `The ${sensorType} value is under the minimum value (${value} < ${minimum}) \n
+      Please turn on the ${device} to avoid damage.
+      `;
+      // sendMail (type, message);
+    }
 }
 

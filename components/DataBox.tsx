@@ -16,11 +16,14 @@ interface DataBoxProps {
 const SensorCard: React.FC<{
     sensor: Sensor;
     onSelectSensor: (sensorType: string) => void;
-    isSelected: boolean; // thêm prop này
-}> = ({ sensor, onSelectSensor, isSelected }) => { // nhận prop isSelected
+    isSelected: boolean;
+}> = ({ sensor, onSelectSensor, isSelected }) => { 
     const color = sensor.icon.color;
+
+    const sensorName = sensor.name.replace(" sensor", "")
+    console.log(sensorName)
     
-    // Chỉ bao bọc bằng ShineBorder khi sensor được chọn
+    
     const content = (
         <div
             key={sensor.name}
@@ -50,14 +53,14 @@ const SensorCard: React.FC<{
                     </div>
                 </div>
                 <p className="font-bold text-lg mb-1 break-words text-center">
-                    {sensor.name}
+                    {sensorName}
                 </p>
                 <p className="text-xl mb-1">
                     <span className="font-extrabold text-2xl">{sensor.value.currentValue}</span> <span className="text-base">{sensor.unit_symbol}</span>
                 </p>
                 {sensor.control_device.name && (
                     <div
-                        className={`mt-2  rounded-2xl p-1 ${
+                        className={`inline-block mt-2 rounded-2xl p-2 px-4 ${
                             sensor.control_device.status ? "bg-green-500" : "bg-red-500"
                         }`}
                     >

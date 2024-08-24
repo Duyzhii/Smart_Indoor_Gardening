@@ -92,10 +92,10 @@ function DashboardPage() {
                             }
                         }
 
-                        if (sensor.value.currentValue > sensor.value.normalValue && key == "PIR") {
+                        if (sensor.value.currentValue > sensor.value.normalValue || sensor.value.currentValue < sensor.value.minValue) {
                             // sending alert to the user by email
                             console.log("Sending alert email to the user...");
-                            sendWarning(key);
+                            // sendWarning(key);
                         }
                         
                         newDynamicData[key] = sensor;  // Add updated sensor data to new state

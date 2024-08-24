@@ -152,7 +152,7 @@ export function DataChart({
             />
             <CardHeader className="relative z-10 items-center pb-0">
                 <CardTitle>{sensor.name} ({sensor.unit_symbol})</CardTitle>
-                <CardDescription>{sensor.control_device.description}</CardDescription>
+                <CardDescription className="text-center mx-auto max-w-full">{sensor.control_device.description}</CardDescription>
             </CardHeader>
             <CardContent className="relative z-10 flex-1 pb-0">
                 <ChartContainer

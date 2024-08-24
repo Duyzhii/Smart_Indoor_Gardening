@@ -306,7 +306,7 @@ export function ActivityTable( {tableType}: ActivityTableProps) {
                 </Table>
 
                 {/* Pagination controls */}
-                <div className="flex justify-center mt-4">
+                <div className="flex justify-center mt-4 mb-14">
                     <Button 
                         onClick={handlePrevious} 
                         disabled={currentPage === 1}
@@ -334,13 +334,13 @@ export function ActivityTable( {tableType}: ActivityTableProps) {
         return (
             <div>
                 {/* <Button className="mb-4" onClick={() => setCurrentPage(1)}>Refresh</Button> */}
-                <Table>
+                <Table className="w-full">
                     <TableCaption>A list of your recent plant activities.</TableCaption>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[300px]">Control Device</TableHead>
-                            <TableHead className = "w-[200px]">Status</TableHead>
-                            <TableHead>Time Report</TableHead>
+                            <TableHead className="md:w-[300px] sm:w-[200px]">Control Device</TableHead>
+                            <TableHead className = "md:w-[200px] sm:w-[50px]">Status</TableHead>
+                            <TableHead className = "sm:w-[500px] pr-0">Time Report</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -362,7 +362,7 @@ export function ActivityTable( {tableType}: ActivityTableProps) {
                 </Table>
 
                 {/* Pagination controls */}
-                <div className="flex justify-center mt-4">
+                <div className="flex justify-center mt-4 mb-14">
                     <Button 
                         onClick={handlePrevious} 
                         disabled={currentPage === 1}
