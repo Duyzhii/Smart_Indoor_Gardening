@@ -29,7 +29,6 @@ export async function sendMail(type: string, message: string) {
 export async function sendWarning(sensorType: string) {
     let type = "";
       let message = "";
-
         const suitable = projectSensor[sensorType].value.normalValue;
         const minimum = projectSensor[sensorType].value.minValue;
         const device = projectSensor[sensorType].control_device.name;

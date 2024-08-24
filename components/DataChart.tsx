@@ -34,6 +34,7 @@ import Particles from "@/components/magicui/particles";
 interface DataChartProps {
     sensor: Sensor;
     onDeviceStatusChange: (sensorType: string, status: boolean) => void;
+    manualMode: boolean;
 }
 
 const getSensorType = (name: string): string => {
@@ -96,6 +97,7 @@ const getSensorStatus = (value: number, minimum: number, suitable: number): stri
 export function DataChart({
     sensor,
     onDeviceStatusChange,
+    manualMode,
 }: DataChartProps) {
     const [buttonStatus, setButtonStatus] = useState<boolean>(sensor.control_device.status);
 
@@ -107,10 +109,12 @@ export function DataChart({
     const sensor_status = getSensorStatus(sensor.value.currentValue, sensor.value.minValue, sensor.value.normalValue);
 
     const handleSwitchChange = (checked: boolean) => {
-        setButtonStatus(checked);
         const sensorType = getSensorType(sensor.name);
         onDeviceStatusChange(sensorType, checked);
 
+        if (!manualMode) return;
+
+        setButtonStatus(checked);
         // Publish MQTT message
         console.log("Publishing MQTT message...");
         publishMQTTMessage(checked ? "ON" : "OFF", sensor.control_device.name);

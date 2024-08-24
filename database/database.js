@@ -45,7 +45,7 @@ export async function uploadSensorData(sensorDataArray) {
       `;
     }
     
-    console.log("Sensor data uploaded successfully");
+    // console.log("Sensor data uploaded successfully");
   }
   catch (error) {
     console.error("Error when uploading data: ", error);
@@ -82,7 +82,7 @@ export async function uploadControlDeviceData(controlDeviceData) {
   try {
     for (const controlDevice of controlDeviceData) {
       const deviceType = controlDevice.deviceType.name;
-      const status = controlDevice.status;
+      const status = controlDevice.status ? 1 : 0;
       const timeStamp = controlDevice.timeStamp;
       
       await sql`
@@ -91,7 +91,7 @@ export async function uploadControlDeviceData(controlDeviceData) {
       `;
     }
 
-    console.log("Control device data uploaded successfully");
+    // console.log("Control device data uploaded successfully");
   }
   catch (error) {
     console.error("Error when uploading data: ", error);
@@ -111,6 +111,41 @@ export async function getControlDeviceData() {
         deviceType: row["devicetype"],
         status: row["status"],
         timeReport: row["timereport"]
+      };
+      
+      dataHistory.push(data);
+    }
+
+    return dataHistory;
+  }
+  catch (error) {
+    console.log("Error when getting data: ", error)
+    return [];
+  }
+}
+
+export async function getSensorValueByDate(sensorType, startDate, endDate) {
+  try {
+    // get average value of sensor data group by date between startDate and endDate, and group by sensor type
+    const { rows } = await sql `
+      SELECT sensortype, AVG(value) as value, EXTRACT(ISODOW FROM timereport) as date
+      FROM SENSOR
+      WHERE timereport >= ${startDate} AND timereport <= ${endDate} AND sensortype = ${sensorType}
+      GROUP BY sensortype, date
+      ORDER BY date ASC
+    `;
+
+    console.log("rows: ", rows);
+
+    // match the day number to the day name
+    const dayName = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+    // convert rows to DataHistory objects 
+    const dataHistory = [];
+    for (const row of rows) {
+      const data = {
+        day: dayName[row["date"]],
+        data: row["value"]
       };
       
       dataHistory.push(data);

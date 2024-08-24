@@ -22,18 +22,23 @@ export function SelectSensors({ setSelectedSensor }: SelectSensorsProps) {
             <SelectContent>
                 <SelectGroup>
                     <SelectLabel>Sensors</SelectLabel>
-                    <SelectItem value="Light-Sensor">Light Sensor</SelectItem>
-                    <SelectItem value="Temperature-Sensor">
+                    <SelectItem value="Light sensor">
+                        Light Sensor
+                    </SelectItem>
+                    <SelectItem value="Temperature sensor">
                         Temperature Sensor
                     </SelectItem>
-                    <SelectItem value= "Soil-Moisture-Sensor">
+                    <SelectItem value= "Soil moisture sensor">
                         Soil Moisture Sensor
                     </SelectItem>
-                    <SelectItem value="Humidity-Sensor">
+                    <SelectItem value="Humidity sensor">
                         Humidity Sensor
                     </SelectItem>
-                    <SelectItem value = "Air-Quality-Sensor">
+                    <SelectItem value = "Air quality sensor">
                         Air Quality Sensor
+                    </SelectItem>
+                    <SelectItem value = "PIR sensor">
+                        PIR Sensor
                     </SelectItem>
                 </SelectGroup>
             </SelectContent>

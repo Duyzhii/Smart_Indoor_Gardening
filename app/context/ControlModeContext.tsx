@@ -1,30 +1,31 @@
-// import { create } from "domain";
-// import React, { createContext, ReactNode, useContext, useState } from "react";
+"use client";
 
-// type ControlModeType = "manual" | "automatic";
+import React, { createContext, ReactNode, useContext, useState } from "react";
 
-// interface ControlModeContextType {
-//     controlMode: ControlModeType;
-//     setControlMode: (mode: ControlModeType) => void;
-// }
+type ControlModeType = "manual" | "automatic";
 
-// const ControlModeContext = createContext<ControlModeContextType | undefined>(undefined);
+interface ControlModeContextType {
+    controlMode: ControlModeType;
+    setControlMode: (mode: ControlModeType) => void;
+}
 
-// export const ControlModeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-//     const [controlMode, setControlMode] = useState<ControlModeType>("manual");
+const ControlModeContext = createContext<ControlModeContextType | undefined>(undefined);
 
-//     return (
-//         <ControlModeContext.Provider value={{ controlMode, setControlMode }}>
-//             {children}
-//         </ControlModeContext.Provider>
-//     );
-// };
+export const ControlModeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    const [controlMode, setControlMode] = useState<ControlModeType>("manual");
 
-// export const useControlMode = () => {
-//     const context = useContext(ControlModeContext);
-//     if (context == undefined) {
-//         throw new Error("useControlMode must be used within a ControlModeProvider");
-//     }
+    return (
+        <ControlModeContext.Provider value={{ controlMode, setControlMode }}>
+            {children}
+        </ControlModeContext.Provider>
+    );
+};
+
+export const useControlMode = () => {
+    const context = useContext(ControlModeContext);
+    if (!context) {
+        throw new Error("useControlMode must be used within a ControlModeProvider");
+    }
     
-//     return context;
-// }
+    return context;
+}

@@ -12,11 +12,13 @@ import  GuideSlider  from "@/components/GuideSlider";
 import { ControlDeviceData } from "@/lib/definitions";
 import { controlDeviceName } from "@/lib/data";
 import { toast } from "react-hot-toast";
+import { useControlMode } from "../context/ControlModeContext";
+import { sendMail, sendWarning } from "../actions/sendMail";
 
 function DashboardPage() {
     const [selectedSensor, setSelectedSensor] = useState<string>("light");
     const [dynamicSensorData, setDynamicSensorData] = useState<Record<string, Sensor>>(projectSensor);
-    const [controlMode, setControlMode] = useState<string>("manual");
+    const { controlMode } = useControlMode();
     console.log("Rebuilding...");
 
     const handleDeviceStatusChange = (sensorType: string, newStatus: boolean) => {
@@ -50,7 +52,6 @@ function DashboardPage() {
         }
         else {
             // Create toast message
-            toast.error("You cannot control the device while using the Automatic Mode");
             toast.error("Device status cannot be changed in automatic mode");
         }
     };
@@ -73,7 +74,8 @@ function DashboardPage() {
                 // get current time with format: 2021-10-10 12:00:00 in Vietnam timezone 
                 const currentTime = new Date().toLocaleString("en-US", {timeZone: "Asia/Ho_Chi_Minh"});
                 console.log("Current time: ", currentTime);
-                
+                console.log("Control mode: ", controlMode);
+
                 setDynamicSensorData((prevData) => {
                     for (const [key, sensorValue] of Object.entries(sensorData)) {
                         let sensor: Sensor = prevData[key] || { value: { currentValue: 0 } };  // Default to a new Sensor object if undefined
@@ -81,15 +83,24 @@ function DashboardPage() {
                         sensor.last_time_updated = new Date().toLocaleString("en-US", {timeZone: "Asia/Ho_Chi_Minh"});
 
                         // get the sensor key of control device
-                        for (const [cd_key, controlDeviceValue] of Object.entries(controlDeviceData)) {
-                            if (controlDeviceName[cd_key].sensor == key) {
-                                sensor.control_device.status = controlDeviceValue as boolean;
+                        if (controlMode == "automatic") {
+                            console.log("Updating control device status...");
+                            for (const [cd_key, controlDeviceValue] of Object.entries(controlDeviceData)) {
+                                if (controlDeviceName[cd_key].sensor == key) {
+                                    sensor.control_device.status = controlDeviceValue as boolean;
+                                }
                             }
+                        }
+
+                        if (sensor.value.currentValue > sensor.value.normalValue && key == "PIR") {
+                            // sending alert to the user by email
+                            console.log("Sending alert email to the user...");
+                            sendWarning(key);
                         }
                         
                         newDynamicData[key] = sensor;  // Add updated sensor data to new state
                     }
-                
+
                     return newDynamicData;
                 });
             } catch (e) {
@@ -97,11 +108,10 @@ function DashboardPage() {
             }
         };
 
-        fetchSensorData();  // Initial data fetch
-        const interval = setInterval(fetchSensorData, 5000);  // Fetch data every 5 seconds
+        const interval = setInterval(fetchSensorData, 1000);  // Fetch data every 5 seconds
 
         return () => clearInterval(interval);  // Clear interval on component unmount
-    }, []);
+    }, [controlMode]);
 
     return (
         <div className="space-y-6 w-11/12 mx-auto mb-10">
@@ -109,6 +119,7 @@ function DashboardPage() {
             <DataChart 
                 sensor={dynamicSensorData[selectedSensor]} 
                 onDeviceStatusChange={handleDeviceStatusChange} 
+                manualMode={controlMode == "manual"}
             />
             <div className="flex gap-4 w-full">
                 <DataBox

@@ -17,63 +17,13 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart";
+import { getSensorValueByDate } from "@/database/database";
+import { use, useEffect, useState } from "react";
 
 interface SensorData {
     day: string;
     data: number;
 }
-
-interface SensorDataMap {
-    [key: string]: SensorData[];
-}
-
-const sensorData: SensorDataMap = {
-    "Light-Sensor": [
-        { day: "Monday", data: 100 },
-        { day: "Tuesday", data: 150 },
-        { day: "Wednesday", data: 120 },
-        { day: "Thursday", data: 180 },
-        { day: "Friday", data: 130 },
-        { day: "Saturday", data: 90 },
-        { day: "Sunday", data: 110 },
-    ],
-    "Temperature-Sensor": [
-        { day: "Monday", data: 80 },
-        { day: "Tuesday", data: 90 },
-        { day: "Wednesday", data: 85 },
-        { day: "Thursday", data: 95 },
-        { day: "Friday", data: 88 },
-        { day: "Saturday", data: 82 },
-        { day: "Sunday", data: 10 },
-    ],
-    "Soil-Moisture-Sensor": [
-        { day: "Monday", data: 45 },
-        { day: "Tuesday", data: 50 },
-        { day: "Wednesday", data: 55 },
-        { day: "Thursday", data: 60 },
-        { day: "Friday", data: 65 },
-        { day: "Saturday", data: 70 },
-        { day: "Sunday", data: 75 },
-    ],
-    "Humidity-Sensor": [
-        { day: "Monday", data: 60 },
-        { day: "Tuesday", data: 62 },
-        { day: "Wednesday", data: 64 },
-        { day: "Thursday", data: 66 },
-        { day: "Friday", data: 68 },
-        { day: "Saturday", data: 70 },
-        { day: "Sunday", data: 72 },
-    ],
-    "Air-Quality-Sensor": [
-        { day: "Monday", data: 40 },
-        { day: "Tuesday", data: 45 },
-        { day: "Wednesday", data: 50 },
-        { day: "Thursday", data: 55 },
-        { day: "Friday", data: 60 },
-        { day: "Saturday", data: 65 },
-        { day: "Sunday", data: 70 },
-    ],
-};
 
 const chartConfig = {
     data: {
@@ -90,6 +40,35 @@ interface HistoryByDayChartProps {
 }
 
 export function HistoryByDayChart({ sensorType, startDate, endDate }: HistoryByDayChartProps) {
+    const [sensorData, setSensorData] = useState<SensorData[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {   
+        const fetchData = async () => {
+            try {
+                const data = await getSensorValueByDate(sensorType, startDate, endDate);
+                setSensorData(data);
+                console.log("Sensor data: ", data);
+            }
+            catch (err) {
+                setError(err as string);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [sensorType, startDate, endDate]);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
+
     return (
         <Card>
             <CardHeader>
@@ -102,7 +81,7 @@ export function HistoryByDayChart({ sensorType, startDate, endDate }: HistoryByD
             </CardHeader>
             <CardContent>
                 <ChartContainer config={chartConfig}>
-                    <BarChart accessibilityLayer data={sensorData[sensorType]}>
+                    <BarChart accessibilityLayer data={sensorData}>
                         <CartesianGrid vertical={false} />
                         <XAxis
                             dataKey="day"

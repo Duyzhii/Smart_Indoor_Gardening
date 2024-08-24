@@ -5,7 +5,6 @@ import { ActivityTable } from '@/components/ActivityTable'
 import { SelectTable } from '@/components/ActivityTable'
 
 function ActivityPage() {
-
   const [table, setTable] = useState<string>("Sensor");
 
   return (

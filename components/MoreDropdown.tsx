@@ -21,7 +21,8 @@ import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Switch } from "./ui/switch";
 import { toast } from "react-hot-toast";
-// import { useControlMode } from "@/app/context/ControlModeContext";
+import { useControlMode } from "@/app/context/ControlModeContext";
+import { publishMQTTMessage } from "@/app/actions/mqttActions";
 
 interface MoreDropdownProps {
   buttonClassName: string;
@@ -35,8 +36,8 @@ function MoreDropdown({ buttonClassName, iconClassName, buttonLabel }: MoreDropd
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const { theme, setTheme } = useTheme();
-  const [controlMode, setControlMode] = useState<string>("manual");
-  // const { controlMode, setControlMode } = useControlMode();
+  // const [controlMode, setControlMode] = useState<string>("manual");
+  const { controlMode, setControlMode } = useControlMode();
   
 
   useEffect(() => {
@@ -67,6 +68,7 @@ function MoreDropdown({ buttonClassName, iconClassName, buttonLabel }: MoreDropd
   const handleControlModeChange = (checked: boolean) => {
     const newMode = checked ? "automatic" : "manual";
     setControlMode(newMode);
+    publishMQTTMessage(checked ? "AUTO" : "MANUAL", "MODE");
 
     if (newMode == "automatic") {
       toast.success(
@@ -160,7 +162,7 @@ function MoreDropdown({ buttonClassName, iconClassName, buttonLabel }: MoreDropd
 
             {showControlMode && (
               <Label htmlFor="control-mode" className="menuItem">
-                {controlMode === "manual" ? "Manual Mode" : "Automatic Mode"}
+                {"Automatic Mode"}
                 <DropdownMenuItem className="ml-auto !p-0">
                   <Switch
                     id="control-mode"
